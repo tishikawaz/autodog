@@ -5,7 +5,7 @@ AutoDog is currently developed for Fortran code. Additional functionality for Py
 
 ## Usage
 
-''':python
+```python:usage.py
 from autodog.fortrancode import FortranCode
 from autodog.gpt3engine import GPT3Engine
 
@@ -17,4 +17,4 @@ code.insert_docs(engine)
 print(code.to_str())
 
 code.write() # overwrite your_code.f90
-'''
+```
