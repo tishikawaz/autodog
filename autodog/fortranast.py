@@ -71,7 +71,7 @@ class StatementNode(BaseNode):
 
     def write_doc(self, doc:str) -> None:
         doc_lines = doc.splitlines()
-        self.doc += ''.join([' '*self.indent_level + '! ' + doc + os.linesep for doc in doc_lines])
+        self.doc = ''.join([' '*self.indent_level + '! ' + doc + os.linesep for doc in doc_lines])
 
 class ProgramNode(StatementNode):
     def __init__(self, code:str):
