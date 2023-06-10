@@ -5,14 +5,15 @@ It is currently developed for Fortran code. Additional functionality for Python 
 
 ## Usage
 
-```python:usage.py
-from autodog.fortrancode import FortranCode
-from autodog.chatgptengine import ChatGPTEngine
+```python:usage_fortran.py
+import autodog
 
-code = FortranCode('your_code.f90')
-engine = ChatGPTEngine(api_key='YOUR-API-KEY')
+code = autodog.code('your_code.f90')
+engine = autodog.engine(api_key='YOUR-API-KEY')
 
+# insert code documentations to a function, subroutine, type definition, ...
 code.insert_docs(engine)
 
-code.write() # overwrite your_code.f90
+# overwrite your_code.f90
+code.write()
 ```

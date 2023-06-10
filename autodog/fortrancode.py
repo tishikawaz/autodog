@@ -1,4 +1,4 @@
-from .fortranast import (
+from .ast.fortran import (
     FortranAST,
     ModuleNode,
     TypeNode,
@@ -12,6 +12,7 @@ from functools import singledispatchmethod
 
 class FortranCode:
     def __init__(self, filepath:str):
+        self.filepath = filepath
         with open(filepath, 'r') as f:
             self.tree = FortranAST(f.read())
 
@@ -21,6 +22,16 @@ class FortranCode:
     def insert_docs(self, engine:any, overwrite=False) -> None:
         for node in self.tree.walk():
             self._insert_docs(node, engine, overwrite)
+
+    def write(self, filepath='') -> None:
+        if filepath == '':
+            return self._write_to_original()
+        with open(filepath, 'w') as f:
+            f.write(self.to_str())
+
+    def _write_to_original(self) -> None:
+        with open(self.filepath, 'w') as f:
+            f.write(self.to_str())
 
     @singledispatchmethod
     def _insert_docs(self, node:any, engine:DocEngine, overwrite:bool) -> None:

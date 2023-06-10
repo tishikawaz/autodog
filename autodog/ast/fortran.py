@@ -169,7 +169,7 @@ def _make_nodes(code:str) -> list:
             if after_block:
                 nodes  += _make_nodes    (_reconstruct_code_block(after_block))
             return nodes
-        elif _match_whole(line.lower(), 'type'):
+        elif _match_whole(line.lower(), 'type') and not '(' in line:
             before_block, block, after_block = _make_blocks(lines, 'type', line_num)
             nodes       = []
             if before_block:

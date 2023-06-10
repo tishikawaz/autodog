@@ -1,7 +1,7 @@
-from .docengine import DocEngine
+from ..docengine import DocEngine
 
 class DummyEngine(DocEngine):
-    def __init__(self, dummy_doc = 'This is a dummy document.', *args, **kwargs):
+    def __init__(self, dummy_doc = 'This is a dummy document.'):
         self.dummy_doc = dummy_doc
 
     def generate_code_doc(self, code, lang='') -> str:

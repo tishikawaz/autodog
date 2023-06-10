@@ -1,11 +1,11 @@
-from .docengine import DocEngine
+from ..docengine import DocEngine
 import openai
 import time
 import textwrap
 import os
 
 class ChatGPTEngine(DocEngine):
-    def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo', *args, **kwargs):
+    def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo'):
         self.notes = notes
         self.doc_type = doc_type
         self.model = model

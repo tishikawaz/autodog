@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 class DocEngine(metaclass=ABCMeta):
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         raise NotImplementedError('DocEngine is an abstract class.')
 
     @abstractmethod
