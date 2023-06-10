@@ -1,4 +1,5 @@
 from .fortrancode import FortranCode
+from .pycode import PyCode
 
 from .engine.chatgpt import ChatGPTEngine
 from .engine.dummy import DummyEngine
@@ -22,5 +23,7 @@ def code(filepath:str, **kwargs):
     extension = os.path.splitext(filepath)[1][1:]
     if any((s in extension.lower()) for s in ['f', 'f90']):
         return FortranCode(filepath)
+    elif 'py' in extension.lower():
+        return PyCode(filepath)
 
     raise UnknownFileExtension
