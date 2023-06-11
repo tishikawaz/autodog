@@ -19,16 +19,12 @@ class FortranCode:
     def to_str(self) -> str:
         return self.tree.to_str()
 
-    def insert_docs(self, engine:any, overwrite=False) -> None:
-        for node in self.tree.walk():
-            self._insert_docs(node, engine, overwrite)
-
-    def write(self, filepath='') -> None:
-        if filepath == '':
-            return self._write_to_original()
+    @singledispatchmethod
+    def write(self, filepath) -> None:
         with open(filepath, 'w') as f:
             f.write(self.to_str())
 
-    def _write_to_original(self) -> None:
+    @write.register
+    def write(self) -> None:
         with open(self.filepath, 'w') as f:
             f.write(self.to_str())

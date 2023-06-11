@@ -1,59 +1,42 @@
-"""This module provides a class `FortranCode` that represents a Fortran code file. It uses
-the `FortranAST` class from the `ast.fortran` module to parse the code and generate an
-abstract syntax tree. The class provides methods to convert the AST to a string, insert
-documentation using a `DocEngine` object, and write the modified code back to the
-original file or a new file.
+"""This module provides a class `FortranCode` that represents a Fortran
+code file. It uses the `FortranAST` class from the `ast.fortran` module
+to parse the code and generate an abstract syntax tree. The class
+provides methods to convert the AST to a string representation and to
+write the code to a file.
 
-The `FortranCode` class has the following methods:
+Attributes:
+    filepath (str): The path to the Fortran code file.
 
-- `__init__(self, filepath: str)`: Initializes a `FortranCode` object with the path to a
-Fortran code file. It reads the file and generates an AST using `FortranAST`.
-
-- `to_str(self) -> str`: Returns a string representation of the AST.
-
-- `insert_docs(self, engine: any, overwrite=False) -> None`: Inserts documentation for
-each node in the AST using a `DocEngine` object. If `overwrite` is True, the original
-code file is modified with the documentation. Otherwise, the modified code is written to
-a new file.
-
-- `write(self, filepath='') -> None`: Writes the modified code to the original file or a
-new file specified by `filepath`. If `filepath` is not provided, the original file is
-overwritten.
-
-- `_write_to_original(self) -> None`: Helper method that writes the modified code to the
+Methods:
+    __init__(self, filepath: str): Initializes the `FortranCode` object
+    by parsing the code file and generating an AST.
+    to_str(self) -> str: Returns a string representation of the AST.
+    write(self, filepath) -> None: Writes the code to the specified file
+    path.
+    write(self) -> None: Writes the code to the original file path
 """
 from .ast.fortran import FortranAST, ModuleNode, TypeNode, FunctionNode, SubroutineNode, ProgramNode
 from .docengine import DocEngine
 from functools import singledispatchmethod
 
 class FortranCode:
-    """class FortranCode:
-        A class to represent Fortran code and provide methods to manipulate it.
+    """The FortranCode class represents a Fortran code file. It takes a
+    filepath as input and initializes an instance of the FortranAST class,
+    which is used to parse the code. The class has a method to_str() that
+    returns the parsed code as a string.
 
-        Attributes
-        ----------
-        filepath : str
-            The path to the Fortran code file.
-        tree : FortranAST
-            The abstract syntax tree of the Fortran code.
-
-        Methods
-        -------
-        to_str() -> str:
-            Returns the Fortran code as a string.
-        insert_docs(engine: any, overwrite=False) -> None:
-            Inserts documentation strings into the Fortran code using the specified
-    documentation engine.
-        write(filepath='') -> None:
-            Writes the Fortran code to a file. If no filepath is provided, overwrites the
-    original file.
-        _write_to_original() -> None:
+    The class also has a write() method that writes the parsed code to a
+    file. This method is implemented using the singledispatchmethod
+    decorator, which allows for different implementations of the method
+    based on the type of argument passed.
     """
 
     def __init__(self, filepath: str):
-        """Initializes an instance of the class with the given filepath. The filepath should be a
-        string representing the path to a Fortran file. The method reads the contents of the
-        file and creates a Fortran Abstract Syntax Tree (AST) using the FortranAST library. The
+        """The `__init__` method initializes an instance of a class with a
+        `filepath` parameter, which is a string representing the path to a
+        Fortran file. The method reads the contents of the file using the `open`
+        function and creates a `FortranAST` object from the file contents. The
+        `FortranAST` object is stored as an attribute of the instance with the
         """
         self.filepath = filepath
         with open(filepath, 'r') as f:
@@ -67,43 +50,35 @@ class FortranCode:
         """
         return self.tree.to_str()
 
-    def insert_docs(self, engine: any, overwrite=False) -> None:
-        """Inserts documents into a database engine for each node in the tree.
+    @singledispatchmethod
+    def write(self, filepath) -> None:
+        """Writes the object to a file at the given file path.
 
         Args:
-            engine (any): The database engine to insert documents into.
-            overwrite (bool, optional): Whether to overwrite existing documents. Defaults to
-        False.
+            filepath (str): The path of the file to write the object to.
 
         Returns:
+            None: This method does not return anything.
+
+        Raises:
+            TypeError: If the object cannot be converted to a string.
+
+        Example:
+            >>> obj = MyClass()
         """
-        for node in self.tree.walk():
-            self._insert_docs(node, engine, overwrite)
-
-    def write(self, filepath='') -> None:
-        """Writes the contents of the current object to a file.
-
-        Args:
-            filepath (str): The path of the file to write to. If not provided, the contents will
-        be written to the original file.
-
-        Returns:
-        """
-        if filepath == '':
-            return self._write_to_original()
         with open(filepath, 'w') as f:
             f.write(self.to_str())
 
-    def _write_to_original(self) -> None:
-        """Writes the string representation of the object to the original file.
+    @write.register
+    def write(self) -> None:
+        """The `write` function is a method of a class that has been decorated with
+        `@write.register`. It takes no arguments and returns `None`.
 
-        Args:
-            self: The object instance.
+        When called, it opens a file specified by the `filepath` attribute of
+        the class instance in write mode and writes the string representation of
+        the instance (returned by the `to_str` method) to the file.
 
-        Returns:
-            None.
-
-        Raises:
+        This function is likely part of a larger system for writing data to
         """
         with open(self.filepath, 'w') as f:
             f.write(self.to_str())
