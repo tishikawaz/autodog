@@ -5,11 +5,12 @@ import textwrap
 import os
 
 class ChatGPTEngine(DocEngine):
-    def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo'):
-        self.notes = notes
-        self.doc_type = doc_type
-        self.model = model
-        openai.api_key=api_key
+    def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo', line_length = 72):
+        self.notes       = notes
+        self.doc_type    = doc_type
+        openai.api_key   = api_key
+        self.model       = model
+        self.line_length = line_length
 
     def _make_question(self, code:str, lang='') -> str:
         q = 'Please suggest a {0} for the following {1}code and write the documentation only.\n'.format(
@@ -32,7 +33,7 @@ class ChatGPTEngine(DocEngine):
         lines = doc.splitlines()
         if not lines:
             return ''
-        return ''.join([textwrap.fill(line,88) + os.linesep for line in lines if not any((s in line) for s in ['```', '"""', "'''"])])
+        return ''.join([textwrap.fill(line, self.line_length, subsequent_indent=' '*_indent_level(line)) + os.linesep for line in lines if not any((s in line) for s in ['```', '"""', "'''"])])
 
     def generate_code_doc(self, code, lang='') -> str:
         question = self._make_question(code, lang)
@@ -77,3 +78,12 @@ class ChatGPTEngine(DocEngine):
                                                 temperature = 0.0)
         self._sleep_rate_limit()
         return self._format(response['choices'][0]['message']['content'])
+
+def _indent_level(line:str) -> int:
+        n=0
+        for c in line:
+            if c == ' ':
+                n += 1
+            else:
+                break
+        return n
