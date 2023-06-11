@@ -13,15 +13,19 @@ class PyCode:
     def to_str(self) -> str:
         return ast.unparse(self.tree)
 
+    @singledispatchmethod
+    def write(self, filepath) -> None:
+        with open(filepath, 'w') as f:
+            f.write(self.to_str())
+
+    @write.register
+    def _(self) -> None:
+        with open(self.filepath, 'w') as f:
+            f.write(self.to_str())
+
     def insert_docs(self, engine:any, overwrite=False) -> None:
         for node in ast.walk(self.tree):
             self._insert_docs(node, engine, overwrite)
-
-    def write(self, filepath='') -> None:
-        if filepath == '':
-            return self._write_to_original()
-        with open(filepath, 'w') as f:
-            f.write(self.to_str())
 
     @singledispatchmethod
     def _insert_docs(self, node:any, engine:DocEngine, overwrite:bool) -> None:
@@ -50,10 +54,6 @@ class PyCode:
         if(ast.get_docstring(node) is not None or overwrite):
             doc = engine.generate_class_doc(ast.unparse(node), lang='Python')
             insert_docstring(node, doc)
-
-    def _write_to_original(self) -> None:
-        with open(self.filepath, 'w') as f:
-            f.write(self.to_str())
 
 def offset_lines(doc:str, level:int) -> str:
     lines = doc.splitlines()
