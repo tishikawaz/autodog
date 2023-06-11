@@ -11,9 +11,10 @@ class ChatGPTEngine(DocEngine):
         openai.api_key   = api_key
         self.model       = model
         self.line_length = line_length
+        self.last_request_time = 0
 
     def _make_question(self, code:str, lang='') -> str:
-        q = 'Please suggest a {0} for the following {1}code and write the documentation only.\n'.format(
+        q = 'Please suggest a {0} for the following {1}code and write the document only.\n'.format(
             self.doc_type,
             lang+' '
         )
@@ -26,8 +27,11 @@ class ChatGPTEngine(DocEngine):
                 q + '- {0}\n'.format(note)
         return q
 
-    def _sleep_rate_limit(self):
-        time.sleep(20)
+    def _sleep_rate_limit(self) -> None:
+        if self.last_request_time == 0:
+            return
+        t_diff = time.time() - self.last_request_time
+        time.sleep(max([0, 20 - t_diff]))
 
     def _format(self, doc:str):
         lines = doc.splitlines()
@@ -40,10 +44,11 @@ class ChatGPTEngine(DocEngine):
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
             {'role': 'user', 'content': question}]
+        self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model       = self.model,
                                                 messages    = messages,
                                                 temperature = 0.0)
-        self._sleep_rate_limit()
+        self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
     def generate_module_doc(self, code, lang='') -> str:
@@ -51,10 +56,11 @@ class ChatGPTEngine(DocEngine):
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
             {'role': 'user', 'content': question}]
+        self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model       = self.model,
                                                 messages    = messages,
                                                 temperature = 0.0)
-        self._sleep_rate_limit()
+        self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
     def generate_class_doc(self, code, lang='') -> str:
@@ -62,10 +68,11 @@ class ChatGPTEngine(DocEngine):
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
             {'role': 'user', 'content': question}]
+        self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model       = self.model,
                                                 messages    = messages,
                                                 temperature = 0.0)
-        self._sleep_rate_limit()
+        self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
     def generate_func_doc(self, code, lang='') -> str:
@@ -73,10 +80,11 @@ class ChatGPTEngine(DocEngine):
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
             {'role': 'user', 'content': question}]
+        self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model       = self.model,
                                                 messages    = messages,
                                                 temperature = 0.0)
-        self._sleep_rate_limit()
+        self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
 def _indent_level(line:str) -> int:
