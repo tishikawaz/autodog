@@ -14,6 +14,7 @@ Methods:
     write(self, filepath) -> None: Writes the code to the specified file
     path.
     write(self) -> None: Writes the code to the original file path
+    specified during initialization.
 """
 from .ast.fortran import FortranAST, ModuleNode, TypeNode, FunctionNode, SubroutineNode, ProgramNode
 from .docengine import DocEngine
@@ -29,6 +30,10 @@ class FortranCode:
     file. This method is implemented using the singledispatchmethod
     decorator, which allows for different implementations of the method
     based on the type of argument passed.
+
+    If a filepath is passed as an argument to the write() method, the parsed
+    code is written to that file. If no argument is passed, the parsed code
+    is written to the original filepath used to initialize the instance.
     """
 
     def __init__(self, filepath: str):
@@ -37,6 +42,7 @@ class FortranCode:
         Fortran file. The method reads the contents of the file using the `open`
         function and creates a `FortranAST` object from the file contents. The
         `FortranAST` object is stored as an attribute of the instance with the
+        name `tree`.
         """
         self.filepath = filepath
         with open(filepath, 'r') as f:
@@ -47,6 +53,8 @@ class FortranCode:
 
         Returns:
             A string representation of the tree structure.
+
+
         """
         return self.tree.to_str()
 
@@ -65,6 +73,7 @@ class FortranCode:
 
         Example:
             >>> obj = MyClass()
+            >>> obj.write('output.txt')
         """
         with open(filepath, 'w') as f:
             f.write(self.to_str())
@@ -79,6 +88,7 @@ class FortranCode:
         the instance (returned by the `to_str` method) to the file.
 
         This function is likely part of a larger system for writing data to
+        files, with different methods registered for different data types.
         """
         with open(self.filepath, 'w') as f:
             f.write(self.to_str())

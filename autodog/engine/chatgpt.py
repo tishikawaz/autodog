@@ -3,6 +3,7 @@ import openai
 import time
 import textwrap
 import os
+import re
 
 class ChatGPTEngine(DocEngine):
     def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo', line_length = 72):
@@ -37,7 +38,14 @@ class ChatGPTEngine(DocEngine):
         lines = doc.splitlines()
         if not lines:
             return ''
-        return ''.join([textwrap.fill(line, self.line_length, subsequent_indent=' '*_indent_level(line)) + os.linesep for line in lines if not any((s in line) for s in ['```', '"""', "'''"])])
+        return ''.join([
+            textwrap.fill(
+                re.sub(r'"""|```|'+r"'''", '', line),
+                self.line_length,
+                subsequent_indent=' '*_indent_level(line)
+            )
+            + os.linesep
+            for line in lines if not any((s == line) for s in ['```', '"""', "'''"])])
 
     def generate_code_doc(self, code, lang='') -> str:
         question = self._make_question(code, lang)
