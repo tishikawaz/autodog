@@ -13,13 +13,13 @@ class PyCode:
     def to_str(self) -> str:
         return ast.unparse(self.tree)
 
-    @singledispatchmethod
-    def write(self, filepath) -> None:
+    def write(self, filepath='') -> None:
+        if filepath == '':
+            return self._write_to_original()
         with open(filepath, 'w') as f:
             f.write(self.to_str())
 
-    @write.register
-    def _(self) -> None:
+    def _write_to_original(self) -> None:
         with open(self.filepath, 'w') as f:
             f.write(self.to_str())
 
