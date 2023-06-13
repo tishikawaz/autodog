@@ -10,7 +10,14 @@ represents the documentation for the corresponding code element. If the
 `lang` parameter is not specified, the default language is assumed to be
 Python. If any of the abstract methods are called on an instance of a
 subclass that has not implemented them, a `NotImplementedError` will be
-raised.
+raised. Each of the abstract methods is documented with its own
+docstring, specifying its parameters, return type, and any exceptions
+that may be raised. The `__init__` method of the `DocEngine` class
+raises a `NotImplementedError` with a message indicating that
+`DocEngine` is an abstract class. This method is typically called when
+an instance of the class is created. Since `DocEngine` is an abstract
+class, it cannot be instantiated directly and must be subclassed
+instead.
 """
 from abc import ABCMeta, abstractmethod
 
@@ -39,7 +46,7 @@ class DocEngine(metaclass=ABCMeta):
         raise NotImplementedError('DocEngine is an abstract class.')
 
     @abstractmethod
-    def generate_code_doc(self, code:str, lang='') -> str:
+    def generate_code_doc(self, code: str, lang='') -> str:
         """The `generate_code_doc` method is an abstract method of the `DocEngine`
         class. It takes in two parameters: `code`, which is the code to be
         documented, and `lang`, which is an optional parameter specifying the
@@ -51,13 +58,12 @@ class DocEngine(metaclass=ABCMeta):
         raise NotImplementedError('DocEngine is an abstract class.')
 
     @abstractmethod
-    def generate_module_doc(self, code:str, lang='') -> str:
+    def generate_module_doc(self, code: str, lang='') -> str:
         """The `generate_module_doc` method is an abstract method of the
         `DocEngine` class. It takes in two parameters: `code`, which is a string
         representing the code to be documented, and `lang`, which is an optional
         string representing the language of the code. The method returns a
         string representing the generated documentation.
-
         Since this is an abstract method, it must be implemented by any subclass
         of `DocEngine`. If it is called on an instance of `DocEngine`, it will
         raise a `NotImplementedError`.
@@ -65,35 +71,28 @@ class DocEngine(metaclass=ABCMeta):
         raise NotImplementedError('DocEngine is an abstract class.')
 
     @abstractmethod
-    def generate_class_doc(self, code:str, lang='') -> str:
+    def generate_class_doc(self, code: str, lang='') -> str:
         """The `generate_class_doc` method is an abstract method of the `DocEngine`
         class. It takes two parameters: `code`, which is a string representing
         the code of a class, and `lang`, which is an optional string
         representing the language of the code. The method returns a string
-        representing the documentation of the class.
-
-        Since this is an abstract method, it must be implemented by any subclass
-        of `DocEngine`. If it is called on an instance of `DocEngine`, it will
-        raise a `NotImplementedError`.
+        representing the documentation of the class. Since this is an abstract
+        method, it must be implemented by any subclass of `DocEngine`. If it is
+        called on an instance of `DocEngine`, it will raise a
+        `NotImplementedError`.
         """
         raise NotImplementedError('DocEngine is an abstract class.')
 
     @abstractmethod
-    def generate_func_doc(self, code:str, lang='') -> str:
-        """Abstract method to generate documentation for a given code snippet in a
-        specified language.
-
-        Args:
-            code (str): The code snippet for which documentation needs to be
-            generated.
-            lang (str): The language in which the documentation needs to be
-            generated. Default is an empty string.
-
-        Returns:
-            str: The generated documentation as a string.
-
-        Raises:
-            NotImplementedError: This is an abstract method and needs to be
-            implemented in the child class.
+    def generate_func_doc(self, code: str, lang='') -> str:
+        """The `generate_func_doc` method is an abstract method that generates
+        documentation for a given code snippet in a specified language. It takes
+        in two parameters: `code` which is the code snippet for which
+        documentation needs to be generated and `lang` which is the language in
+        which the documentation needs to be generated. The default value for
+        `lang` is an empty string. The method returns the generated
+        documentation as a string. If the method is called directly, it raises a
+        `NotImplementedError` since it is an abstract method and needs to be
+        implemented in the child class.
         """
         raise NotImplementedError('DocEngine is an abstract class.')
