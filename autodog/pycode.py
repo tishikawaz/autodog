@@ -57,7 +57,9 @@ class PyCode:
 
 def offset_lines(doc:str, level:int) -> str:
     lines = doc.splitlines()
-    return lines[0] + ''.join([os.linesep + (' '*level) + line for line in lines[1:]]) + os.linesep + (' '*level)
+    return lines[0] + ''.join(
+            [os.linesep + (' '*level) + line if line else '' for line in lines[1:]]
+        )  + os.linesep + (' '*level)
 
 def insert_docstring(node:any, doc:str) -> None:
     if not isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef, ast.ClassDef, ast.Module)):

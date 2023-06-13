@@ -96,7 +96,7 @@ class ModuleNode(StatementNode):
 def _remove_comment(line:str) -> str:
     return line.split('!')[0]
 
-def _is_continue_line(line) -> bool:
+def _is_continue_line(line:str) -> bool:
     segments = _remove_comment(line).split()
     return '&' in segments[-1][-1] # final segment, final position
 

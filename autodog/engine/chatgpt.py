@@ -47,7 +47,7 @@ class ChatGPTEngine(DocEngine):
             + os.linesep
             for line in lines if not any((s == line) for s in ['```', '"""', "'''"])])
 
-    def generate_code_doc(self, code, lang='') -> str:
+    def generate_code_doc(self, code:str, lang='') -> str:
         question = self._make_question(code, lang)
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
@@ -59,7 +59,7 @@ class ChatGPTEngine(DocEngine):
         self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
-    def generate_module_doc(self, code, lang='') -> str:
+    def generate_module_doc(self, code:str, lang='') -> str:
         question = self._make_question(code, lang)
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
@@ -71,7 +71,7 @@ class ChatGPTEngine(DocEngine):
         self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
-    def generate_class_doc(self, code, lang='') -> str:
+    def generate_class_doc(self, code:str, lang='') -> str:
         question = self._make_question(code, lang)
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
@@ -83,7 +83,7 @@ class ChatGPTEngine(DocEngine):
         self.last_request_time = time.time()
         return self._format(response['choices'][0]['message']['content'])
 
-    def generate_func_doc(self, code, lang='') -> str:
+    def generate_func_doc(self, code:str, lang='') -> str:
         question = self._make_question(code, lang)
         messages=[
             {'role': 'system', 'content': 'You are an helpful programmer.'},
