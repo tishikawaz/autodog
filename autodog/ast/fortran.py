@@ -405,7 +405,7 @@ def _make_nodes(code: str) -> list:
             if after_block:
                 nodes += _make_nodes(_reconstruct_code_block(after_block))
             return nodes
-        elif _match_whole(line.lower(), 'type') and (not '(' in line):
+        elif _is_type_statement(line):
             (before_block, block, after_block) = _make_blocks(lines, 'type', line_num)
             nodes = []
             if before_block:
@@ -415,6 +415,10 @@ def _make_nodes(code: str) -> list:
                 nodes += _make_nodes(_reconstruct_code_block(after_block))
             return nodes
     return [BodyNode(code)]
+
+def _is_type_statement(line:str) -> bool:
+    declaration = re.split(r'[,]|[:]+', line)[0]
+    return _match_whole(declaration.lower(), 'type') and (not '(' in declaration)
 
 class FortranAST:
     """class FortranAST:
