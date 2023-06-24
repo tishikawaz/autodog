@@ -3,7 +3,7 @@ module fortran_programmer_module
 
     private
 
-    type, public :: fortran_programmer_class
+    type, public, extends(programmer) :: fortran_programmer_class
         private
 
         character(:),allocatable :: language
