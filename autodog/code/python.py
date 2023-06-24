@@ -36,7 +36,7 @@ docstring, the function adds the new docstring as the first statement in
 the node's body. The function also adjusts the indentation of the
 docstring to match the indentation of the node's body.
 """
-from .docengine import DocEngine
+from autodog.engine.docengine import DocEngine
 from functools import singledispatchmethod
 import ast
 import os

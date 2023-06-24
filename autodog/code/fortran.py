@@ -14,8 +14,8 @@ The `_insert_docs` method is a private method that is used by
 node. It uses the `singledispatchmethod` decorator to register methods
 for each type of node.
 """
-from .ast.fortran import FortranAST, ModuleNode, TypeNode, FunctionNode, SubroutineNode, ProgramNode
-from .docengine import DocEngine
+from autodog.ast.fortran import FortranAST, ModuleNode, TypeNode, FunctionNode, SubroutineNode, ProgramNode
+from autodog.engine.docengine import DocEngine
 from functools import singledispatchmethod
 
 class FortranCode:

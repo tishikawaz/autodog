@@ -14,7 +14,7 @@ Methods:
     generate_func_doc(code: str, lang: str='') -> str:
         Returns the dummy document.
 """
-from ..docengine import DocEngine
+from autodog.engine.docengine import DocEngine
 
 class DummyEngine(DocEngine):
     """The `DummyEngine` class is a subclass of `DocEngine` and provides dummy

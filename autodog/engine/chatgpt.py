@@ -10,7 +10,7 @@ documentation. The class also has several helper methods such as
 `_indent_level` method is a private helper method that calculates the
 indentation level of a given line.
 """
-from ..docengine import DocEngine
+from autodog.engine.docengine import DocEngine
 import openai
 import time
 import textwrap
