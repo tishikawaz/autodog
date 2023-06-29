@@ -150,7 +150,7 @@ class PyCode:
         - `None`
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_module_doc(ast.unparse(node), lang='Python')
+            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='module')
             insert_docstring(node, doc)
 
     @_insert_docs.register
@@ -167,7 +167,7 @@ class PyCode:
         language is set to Python. The function returns `None`.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_func_doc(ast.unparse(node), lang='Python')
+            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='function')
             insert_docstring(node, doc)
 
     @_insert_docs.register
@@ -180,7 +180,7 @@ class PyCode:
         `insert_docstring` function. The function does not return anything.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_func_doc(ast.unparse(node), lang='Python')
+            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='async function')
             insert_docstring(node, doc)
 
     @_insert_docs.register
@@ -200,7 +200,7 @@ class PyCode:
         `insert_docstring` function. The function does not return anything.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_class_doc(ast.unparse(node), lang='Python')
+            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='class')
             insert_docstring(node, doc)
 
 def offset_lines(doc: str, level: int) -> str:

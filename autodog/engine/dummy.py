@@ -38,7 +38,7 @@ class DummyEngine(DocEngine):
         """
         self.dummy_doc = dummy_doc
 
-    def generate_code_doc(self, code: str, lang='') -> str:
+    def generate_doc(self, code: str, lang: str, statement_kind:str, context='') -> str:
         """Generate documentation for a given code snippet.
         Args:
             self: The object instance.
@@ -48,37 +48,5 @@ class DummyEngine(DocEngine):
             an empty string.
         Returns:
             str: The generated documentation for the code snippet.
-        """
-        return self.dummy_doc
-
-    def generate_module_doc(self, code: str, lang='') -> str:
-        """Generate a module documentation string.
-        Args:
-            self: The object instance.
-            code (str): The code to generate the documentation for.
-            lang (str): The language of the code. Default is an empty string.
-        Returns:
-            str: The generated module documentation string.
-        """
-        return self.dummy_doc
-
-    def generate_class_doc(self, code: str, lang='') -> str:
-        """Generate a class documentation.
-        Args:
-            self: The instance of the class.
-            code (str): The code for which the documentation is to be generated.
-            lang (str): The language of the code. Default is an empty string.
-        Returns:
-            str: The generated documentation.
-        """
-        return self.dummy_doc
-
-    def generate_func_doc(self, code: str, lang='') -> str:
-        """Generate a dummy docstring for a given code and language.
-        Args:
-            code (str): The code for which the docstring needs to be generated.
-            lang (str): The language of the code. Default is an empty string.
-        Returns:
-            str: A dummy docstring.
         """
         return self.dummy_doc

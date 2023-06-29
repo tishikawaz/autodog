@@ -126,7 +126,7 @@ class FortranCode:
         attribute.
         """
         if not node.doc or overwrite:
-            node.write_doc(engine.generate_module_doc(node.to_str(), lang='Fortran'))
+            node.write_doc(engine.generate_doc(node.to_str(), lang='Fortran', statement_kind='module'))
 
     @_insert_docs.register
     def _(self, node: FunctionNode, engine: DocEngine, overwrite: bool) -> None:
@@ -145,7 +145,7 @@ class FortranCode:
         FunctionNode object's doc attribute.
         """
         if not node.doc or overwrite:
-            node.write_doc(engine.generate_func_doc(node.to_str(), lang='Fortran'))
+            node.write_doc(engine.generate_doc(node.to_str(), lang='Fortran', statement_kind='function'))
 
     @_insert_docs.register
     def _(self, node: SubroutineNode, engine: DocEngine, overwrite: bool) -> None:
@@ -162,7 +162,7 @@ class FortranCode:
         attribute.
         """
         if not node.doc or overwrite:
-            node.write_doc(engine.generate_func_doc(node.to_str(), lang='Fortran'))
+            node.write_doc(engine.generate_doc(node.to_str(), lang='Fortran', statement_kind='subroutine'))
 
     @_insert_docs.register
     def _(self, node: TypeNode, engine: DocEngine, overwrite: bool) -> None:
@@ -180,7 +180,7 @@ class FortranCode:
         the TypeNode object.
         """
         if not node.doc or overwrite:
-            node.write_doc(engine.generate_class_doc(node.to_str(), lang='Fortran'))
+            node.write_doc(engine.generate_doc(node.to_str(), lang='Fortran', statement_kind='type'))
 
     @_insert_docs.register
     def _(self, node: ProgramNode, engine: DocEngine, overwrite: bool) -> None:
@@ -201,4 +201,4 @@ class FortranCode:
             None
         """
         if not node.doc or overwrite:
-            node.write_doc(engine.generate_code_doc(node.to_str(), lang='Fortran'))
+            node.write_doc(engine.generate_doc(node.to_str(), lang='Fortran', statement_kind='code'))

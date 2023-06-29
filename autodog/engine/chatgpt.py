@@ -6,7 +6,7 @@ four methods that generate documentation for code at different levels:
 `generate_func_doc`. Each method takes in a code string and an optional
 language parameter and returns a string containing the generated
 documentation. The class also has several helper methods such as
-`_make_question`, `_sleep_rate_limit`, and `_format`. The
+`_make_prompt`, `_sleep_rate_limit`, and `_format`. The
 `_indent_level` method is a private helper method that calculates the
 indentation level of a given line.
 """
@@ -23,11 +23,11 @@ class ChatGPTEngine(DocEngine):
     takes in various parameters such as notes, document type, API key,
     model, and line length. It has four methods that generate documentation
     for code, modules, classes, and functions respectively. The
-    `_make_question` method creates a question for the GPT-3 model to
+    `_make_prompt` method creates a prompt for the GPT-3 model to
     generate the documentation. The `_sleep_rate_limit` method ensures that
     the rate limit for the OpenAI API is not exceeded. The `_format` method
     formats the generated documentation. The class uses a chat-based
-    approach where the GPT-3 model is asked a question and it responds with
+    approach where the GPT-3 model is asked a prompt and it responds with
     the generated documentation.
     """
 
@@ -53,8 +53,8 @@ class ChatGPTEngine(DocEngine):
         self.line_length = line_length
         self.last_request_time = 0
 
-    def _make_question(self, code: str, lang='') -> str:
-        """The `_make_question` function takes in a string `code` and an optional
+    def _make_prompt(self, code:str, lang:str, statement_kind:str, context='') -> str:
+        """The `_make_prompt` function takes in a string `code` and an optional
         string `lang` as arguments and returns a formatted string that asks the
         user to suggest a document for the given code. The function also
         includes any notes that may have been added to the object calling the
@@ -69,15 +69,26 @@ class ChatGPTEngine(DocEngine):
         given code, including any notes that may have been added to the object
         calling the function.
         """
-        q = 'Please suggest a {0} for the following {1}code and write the document only.\n'.format(self.doc_type, lang + ' ')
-        q += '```:code' + '\n'
-        q += code + '\n'
-        q += '```' + '\n'
+        p  = 'Please write a {0} {1} for the following {2} and output {1} only.'.format(lang, self.doc_type, statement_kind) + os.linesep
+        p += ''                    + os.linesep
+        p  = '```{0}'.format(lang) + os.linesep
+        p += '{0}'   .format(code) + os.linesep
+        p += '```'                 + os.linesep
+        p += ''                    + os.linesep
+
+        if context:
+            p += 'This {0} is defined the following context:'.format(statement_kind) + os.linesep
+            p += '```{0}'                                    .format(lang          ) + os.linesep
+            p += '{0}'                                       .format(context       ) + os.linesep
+            p += '```'                                                               + os.linesep
+            p += ''                                                                  + os.linesep
+
         if self.notes:
-            q += 'Notes:\n'
+            p += 'Notes:' + os.linesep
             for note in self.notes:
-                q + '- {0}\n'.format(note)
-        return q
+                p + '- {0}\n'.format(note)  + os.linesep
+
+        return p
 
     def _sleep_rate_limit(self) -> None:
         """The `_sleep_rate_limit` function is used to limit the rate of requests
@@ -111,69 +122,18 @@ class ChatGPTEngine(DocEngine):
             return ''
         return ''.join([textwrap.fill(re.sub('"""|```|' + "'''", '', line), self.line_length, subsequent_indent=' ' * _indent_level(line)) + os.linesep for line in lines if not any((s == line for s in ['```', '"""', "'''"]))])
 
-    def generate_code_doc(self, code: str, lang='') -> str:
+    def generate_doc(self, code: str, lang: str, statement_kind:str, context='') -> str:
         """The `generate_code_doc` function takes in a string `code` and an
         optional string `lang` as input parameters and returns a string. It uses
-        the private method `_make_question` to create a question based on the
+        the private method `_make_prompt` to create a prompt based on the
         input `code` and `lang`. It then creates a list of messages containing a
-        system message and the generated question. The function then waits for a
+        system message and the generated prompt. The function then waits for a
         certain amount of time to avoid rate limiting and sends the messages to
         the OpenAI chatbot using the `openai.ChatCompletion.create` method.
         Finally, it formats and returns the response received from the chatbot.
         """
-        question = self._make_question(code, lang)
-        messages = [{'role': 'system', 'content': 'You are an helpful programmer.'}, {'role': 'user', 'content': question}]
-        self._sleep_rate_limit()
-        response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
-        self.last_request_time = time.time()
-        return self._format(response['choices'][0]['message']['content'])
-
-    def generate_module_doc(self, code: str, lang='') -> str:
-        """The `generate_module_doc` function takes in a string of code and an
-        optional language parameter and returns a string. It uses the
-        `_make_question` method to create a question based on the code and
-        language provided, then sends that question to the OpenAI chatbot API
-        along with a message indicating that the user is a helpful programmer.
-        The function then waits for the API response, formats it, and returns
-        it. This function is part of a larger class that interacts with the
-        OpenAI chatbot API to generate documentation for code.
-        """
-        question = self._make_question(code, lang)
-        messages = [{'role': 'system', 'content': 'You are an helpful programmer.'}, {'role': 'user', 'content': question}]
-        self._sleep_rate_limit()
-        response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
-        self.last_request_time = time.time()
-        return self._format(response['choices'][0]['message']['content'])
-
-    def generate_class_doc(self, code: str, lang='') -> str:
-        """The `generate_class_doc` function takes in a string `code` and an
-        optional string `lang` as input parameters and returns a string. It uses
-        the private method `_make_question` to create a question based on the
-        input `code` and `lang`. It then creates a list of messages containing a
-        system message and the generated question. The function then waits for a
-        certain amount of time to avoid rate limiting and sends the messages to
-        the OpenAI chatbot using the `ChatCompletion` API. Finally, it formats
-        and returns the response received from the chatbot.
-        """
-        question = self._make_question(code, lang)
-        messages = [{'role': 'system', 'content': 'You are an helpful programmer.'}, {'role': 'user', 'content': question}]
-        self._sleep_rate_limit()
-        response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
-        self.last_request_time = time.time()
-        return self._format(response['choices'][0]['message']['content'])
-
-    def generate_func_doc(self, code: str, lang='') -> str:
-        """The `generate_func_doc` function takes in a string `code` and an
-        optional string `lang` as input parameters and returns a string. It uses
-        the OpenAI API to generate a response to a question that is constructed
-        using the `_make_question` method. The response is obtained by sending a
-        message to the OpenAI chatbot using the `openai.ChatCompletion.create`
-        method. The function also includes rate limiting to avoid exceeding the
-        API usage limits. The response is then formatted using the `_format`
-        method and returned.
-        """
-        question = self._make_question(code, lang)
-        messages = [{'role': 'system', 'content': 'You are an helpful programmer.'}, {'role': 'user', 'content': question}]
+        prompt = self._make_prompt(code, lang, statement_kind, context)
+        messages = [{'role': 'system', 'content': 'You are an experienced programmer.'}, {'role': 'user', 'content': prompt}]
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
         self.last_request_time = time.time()
