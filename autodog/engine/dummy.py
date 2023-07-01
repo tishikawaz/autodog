@@ -18,12 +18,21 @@ from autodog.engine.docengine import DocEngine
 
 class DummyEngine(DocEngine):
     """The `DummyEngine` class is a subclass of `DocEngine` and provides dummy
-    documentation for code, modules, classes, and functions. The class has
-    four methods, `generate_code_doc`, `generate_module_doc`,
+    documentation for code, modules, classes, and functions.
+    The class has four methods, `generate_code_doc`, `generate_module_doc`,
     `generate_class_doc`, and `generate_func_doc`, which take in a `code`
     string and an optional `lang` string and return the same dummy document
-    for all of them. The `__init__` method initializes the `dummy_doc`
-    attribute with a default value of "This is a dummy document."
+    for all of them.
+    The `__init__` method initializes the `dummy_doc` attribute with a
+    default value of "This is a dummy document."
+    Attributes:
+        dummy_doc (str): A string representing the dummy document.
+    Methods:
+        __init__(self, dummy_doc='This is a dummy document.'):
+            Initialize the class with a dummy document.
+        generate_doc(self, code: str, lang: str, statement_kind: str,
+        context='') -> str:
+            Generate documentation for a given code snippet.
     """
 
     def __init__(self, dummy_doc='This is a dummy document.'):
@@ -38,7 +47,7 @@ class DummyEngine(DocEngine):
         """
         self.dummy_doc = dummy_doc
 
-    def generate_doc(self, code: str, lang: str, statement_kind:str, context='') -> str:
+    def generate_doc(self, code: str, lang: str, statement_kind: str, context='') -> str:
         """Generate documentation for a given code snippet.
         Args:
             self: The object instance.
@@ -46,6 +55,9 @@ class DummyEngine(DocEngine):
             generated.
             lang (str): The programming language of the code snippet. Default is
             an empty string.
+            statement_kind (str): The kind of statement in the code snippet.
+            context (str): Additional context information. Default is an empty
+            string.
         Returns:
             str: The generated documentation for the code snippet.
         """

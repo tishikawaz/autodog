@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AutoDog"
+version = "0.0.1"
+authors = [
+  { name="Tatsumasa Ishikawa" },
+]
+description = "An automatic documentation generator to document a specific segment of code"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/tishikawaz/autodog/tree/main"
+"Bug Tracker" = "https://github.com/tishikawaz/autodog/issues"
+
+[project.scripts]
+pylint = "autodog.app:app"
