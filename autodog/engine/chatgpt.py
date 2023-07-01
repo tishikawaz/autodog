@@ -111,33 +111,6 @@ class ChatGPTEngine(DocEngine):
         t_diff = time.time() - self.last_request_time
         time.sleep(max([0, 20 - t_diff]))
 
-    def _format(self, doc: str):
-        """This function takes a string `doc` as input and formats it by removing
-        any triple quotes or backticks and wrapping the text to fit within the
-        specified `line_length`. The function returns the formatted string. If
-        the input string is empty or contains only triple quotes or backticks,
-        an empty string is returned. The `_indent_level` function is used to
-        determine the indentation level of each line. The formatted string is
-        separated by line breaks using the `os.linesep` method.
-        """
-
-        # Assuming that not only the document but also the implementation is returned.
-        # Thus, the {@code doc} is divided into three parts by separator '"""'.
-        segments = doc.split('"""')
-        if len(segments) == 3:
-            lines = segments[1].splitlines()
-            level = _first_indentation_level(lines)
-            return ''.join([
-                textwrap.fill(line[level:], self.line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep
-                for line in lines])
-
-        # Assuming that only documents are returned.
-        # Erase unnecessary characters and break lines at a user-specified length.
-        lines = doc.splitlines()
-        return ''.join([
-            textwrap.fill(line, self.line_length, subsequent_indent=' ' * _indent_level(line)) + os.linesep
-            for line in lines if not any((s == line for s in ['```', '"""', "'''"]))])
-
     def generate_doc(self, code: str, lang: str, statement_kind:str, context='') -> str:
         """The `generate_code_doc` function takes in a string `code` and an
         optional string `lang` as input parameters and returns a string. It uses
@@ -153,7 +126,39 @@ class ChatGPTEngine(DocEngine):
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
         self.last_request_time = time.time()
-        return self._format(response['choices'][0]['message']['content'])
+        return _format(response['choices'][0]['message']['content'], lang, self.line_length)
+
+def _format_python(line_length:int, doc: str):
+    # Assuming that not only the document but also the implementation is returned.
+    # Thus, the {@code doc} is divided into three parts by separator '"""'.
+    segments = doc.split('"""')
+    if len(segments) == 3:
+        lines = segments[1].splitlines()
+        level = _first_indentation_level(lines)
+        return ''.join([
+            textwrap.fill(line[level:], line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep
+            for line in lines])
+
+    # Assuming that only documents are returned.
+    # Erase unnecessary characters and break lines at a user-specified length.
+    lines = doc.splitlines()
+    return ''.join([
+        textwrap.fill(line, line_length, subsequent_indent=' ' * _indent_level(line)) + os.linesep
+        for line in lines if not any((s == line for s in ['```', '"""', "'''"]))])
+
+def _format(doc: str, lang: str, line_length: int) -> str:
+    formatter = {
+        'python': _format_python,
+        'fortran': _format_fortran
+    }
+    return formatter[lang.lower()](line_length, doc)
+
+def _format_fortran(line_length:int, doc: str):
+    lines = doc.splitlines()
+    level = _first_indentation_level(lines)
+    return ''.join([
+        textwrap.fill(re.sub('!', '', line[level:]), line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep
+        for line in lines if '!' in line])
 
 def _first_indentation_level(lines: list[str]) -> int:
     for line in lines:
