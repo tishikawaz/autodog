@@ -153,10 +153,6 @@ class ChatGPTEngine(DocEngine):
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
         self.last_request_time = time.time()
-        print('### Prompt ###')
-        print(prompt)
-        print('### Response ###')
-        print(response['choices'][0]['message']['content'])
         return self._format(response['choices'][0]['message']['content'])
 
 def _first_indentation_level(lines: list[str]) -> int:
