@@ -69,24 +69,27 @@ class ChatGPTEngine(DocEngine):
         given code, including any notes that may have been added to the object
         calling the function.
         """
-        p  = 'Please write a {0} {1} for the following {2} and output {1} only.'.format(lang, self.doc_type, statement_kind) + os.linesep
-        p += ''                    + os.linesep
-        p  = '```{0}'.format(lang) + os.linesep
-        p += '{0}'   .format(code) + os.linesep
-        p += '```'                 + os.linesep
-        p += ''                    + os.linesep
+        p  = 'Please write a {0} {1} for the following {2}.'.format(lang, self.doc_type, statement_kind) + os.linesep
+        p += ''                            + os.linesep
+        p += '```{0}'.format(lang.lower()) + os.linesep
+        p += '{0}'   .format(code        ) + os.linesep
+        p += '```'                         + os.linesep
+        p += ''                            + os.linesep
 
         if context:
-            p += 'This {0} is defined the following context:'.format(statement_kind) + os.linesep
-            p += '```{0}'                                    .format(lang          ) + os.linesep
-            p += '{0}'                                       .format(context       ) + os.linesep
-            p += '```'                                                               + os.linesep
-            p += ''                                                                  + os.linesep
+            p += 'This {0} is defined in the following context:'.format(statement_kind) + os.linesep
+            p += ''
+            p += '```{0}'.format(lang.lower()) + os.linesep
+            p += '{0}'   .format(context     ) + os.linesep
+            p += '```'                         + os.linesep
+            p += ''                            + os.linesep
 
         if self.notes:
             p += 'Notes:' + os.linesep
             for note in self.notes:
                 p + '- {0}\n'.format(note)  + os.linesep
+
+        p += 'Give {0} of this {1} only.'.format(self.doc_type, statement_kind)
 
         return p
 
@@ -117,10 +120,23 @@ class ChatGPTEngine(DocEngine):
         determine the indentation level of each line. The formatted string is
         separated by line breaks using the `os.linesep` method.
         """
+
+        # Assuming that not only the document but also the implementation is returned.
+        # Thus, the {@code doc} is divided into three parts by separator '"""'.
+        segments = doc.split('"""')
+        if len(segments) == 3:
+            lines = segments[1].splitlines()
+            level = _first_indentation_level(lines)
+            return ''.join([
+                textwrap.fill(line[level:], self.line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep
+                for line in lines])
+
+        # Assuming that only documents are returned.
+        # Erase unnecessary characters and break lines at a user-specified length.
         lines = doc.splitlines()
-        if not lines:
-            return ''
-        return ''.join([textwrap.fill(re.sub('"""|```|' + "'''", '', line), self.line_length, subsequent_indent=' ' * _indent_level(line)) + os.linesep for line in lines if not any((s == line for s in ['```', '"""', "'''"]))])
+        return ''.join([
+            textwrap.fill(line, self.line_length, subsequent_indent=' ' * _indent_level(line)) + os.linesep
+            for line in lines if not any((s == line for s in ['```', '"""', "'''"]))])
 
     def generate_doc(self, code: str, lang: str, statement_kind:str, context='') -> str:
         """The `generate_code_doc` function takes in a string `code` and an
@@ -137,7 +153,16 @@ class ChatGPTEngine(DocEngine):
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
         self.last_request_time = time.time()
+        print('### Prompt ###')
+        print(prompt)
+        print('### Response ###')
+        print(response['choices'][0]['message']['content'])
         return self._format(response['choices'][0]['message']['content'])
+
+def _first_indentation_level(lines: list[str]) -> int:
+    for line in lines:
+        if line:
+            return _indent_level(line)
 
 def _indent_level(line: str) -> int:
     """Returns the number of leading spaces in a given string.
