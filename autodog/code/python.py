@@ -37,6 +37,7 @@ the node's body. The function also adjusts the indentation of the
 docstring to match the indentation of the node's body.
 """
 from autodog.engine.docengine import DocEngine
+from autodog.code.utils import progress_bar_nothing
 from functools import singledispatchmethod
 import ast
 import os
@@ -105,7 +106,7 @@ class PyCode:
         with open(self.filepath, 'w') as f:
             f.write(self.to_str())
 
-    def insert_docs(self, engine: any, overwrite=False) -> None:
+    def insert_docs(self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs) -> None:
         """The `insert_docs` function inserts documentation strings for all nodes
         in the abstract syntax tree of the current object into the specified
         database engine. It takes two arguments: `engine`, which is the database
@@ -117,7 +118,7 @@ class PyCode:
         the `ast.walk` method and calls the `_insert_docs` method for each node,
         passing in the node, the database engine, and the `overwrite` flag.
         """
-        for node in ast.walk(self.tree):
+        for node in progress_bar(ast.walk(self.tree), **kwargs):
             self._insert_docs(node, engine, overwrite)
 
     @singledispatchmethod

@@ -16,6 +16,7 @@ for each type of node.
 """
 from autodog.ast.fortran import FortranAST, ModuleNode, TypeNode, FunctionNode, SubroutineNode, ProgramNode
 from autodog.engine.docengine import DocEngine
+from autodog.code.utils import progress_bar_nothing
 from functools import singledispatchmethod
 
 class FortranCode:
@@ -78,7 +79,7 @@ class FortranCode:
         with open(self.filepath, 'w') as f:
             f.write(self.to_str())
 
-    def insert_docs(self, engine: any, overwrite=False) -> None:
+    def insert_docs(self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs) -> None:
         """Inserts documents into a database engine.
         Args:
             engine (any): The database engine to insert the documents into.
@@ -93,7 +94,7 @@ class FortranCode:
         parameter is set to True, any existing documents with the same ID will
         be overwritten. Otherwise, the documents will be skipped.
         """
-        for node in self.tree.walk():
+        for node in progress_bar(self.tree.walk(), **kwargs):
             self._insert_docs(node, engine, overwrite)
 
     @singledispatchmethod
