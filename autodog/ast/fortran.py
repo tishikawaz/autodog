@@ -33,13 +33,14 @@ import re
 
 class EndStatementNotFound(Exception):
     """Custom exception class raised when an end statement is not found.
-    This exception is raised when a specific end statement is expected but
-    not found in the code. It can be used to handle cases where the code
-    execution cannot proceed without a specific end statement.
-    Attributes:
-        None
-    Methods:
-        None
+        This exception is raised when a specific end statement is expected
+        but
+        not found in the code. It can be used to handle cases where the code
+        execution cannot proceed without a specific end statement.
+        Attributes:
+            None
+        Methods:
+            None
     """
     pass
 
@@ -253,9 +254,9 @@ class ModuleNode(StatementNode):
 def _remove_comment(line: str) -> str:
     """Removes the comment from the given line.
     Parameters:
-    line (str): The input line containing a comment.
+    - line (str): The input line containing a comment.
     Returns:
-    str: The line with the comment removed.
+    - str: The line with the comment removed.
     """
     return line.split('!')[0]
 
@@ -270,8 +271,7 @@ def _is_continue_line(line: str) -> bool:
     return '&' in segments[-1][-1]
 
 def _has_doc_block(lines: list, end_of_statement: int) -> bool:
-    """
-    Checks if there is a doc block after the given statement.
+    """Checks if there is a doc block after the given statement.
     Args:
         lines (list): The list of lines containing the code.
         end_of_statement (int): The index of the end of the statement.

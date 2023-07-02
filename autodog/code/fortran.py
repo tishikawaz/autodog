@@ -20,35 +20,30 @@ from autodog.utils.progress import progress_bar_nothing
 from functools import singledispatchmethod
 
 class FortranCode:
-    """This is a class `FortranCode` that represents a Fortran code
-        file. It
-        has methods to read, write, and modify the code file.
-        Attributes:
-            filepath (str): The filepath of the Fortran code file.
-            tree (FortranAST): The abstract syntax tree (AST) of the code.
-        Methods:
-            __init__(self, filepath: str) -> None:
-                Initializes the object with the filepath of the Fortran code
-                file
-                and creates an abstract syntax tree (AST) of the code using
-                the
-                `FortranAST` class.
-            to_str(self) -> str:
-                Returns the string representation of the AST.
-            write(self, filepath='') -> None:
-                Writes the modified code to a file. If no filepath is
-                provided,
-                it writes to the original file.
-            _write_to_original(self) -> None:
-                Writes the modified code to the original file.
-            insert_docs(self, engine: any, overwrite=False,
-            progress_bar=progress_bar_nothing, **kwargs) -> None:
-                Inserts documentation into the code using a `DocEngine`
-                object.
-            _insert_docs(self, node: any, engine: DocEngine, overwrite:
-            bool) -> None:
-                Inserts documentation for a given node using the specified
-                documentation engine.
+    """This is a class `FortranCode` that represents a Fortran code file. It
+    has methods to read, write, and modify the code file.
+    Attributes:
+        filepath (str): The filepath of the Fortran code file.
+        tree (FortranAST): The abstract syntax tree (AST) of the code.
+    Methods:
+        __init__(self, filepath: str) -> None:
+            Initializes the object with the filepath of the Fortran code
+            file and creates an abstract syntax tree (AST) of the code using
+            the `FortranAST` class.
+        to_str(self) -> str:
+            Returns the string representation of the AST.
+        write(self, filepath='') -> None:
+            Writes the modified code to a file. If no filepath is provided,
+            it writes to the original file.
+        _write_to_original(self) -> None:
+            Writes the modified code to the original file.
+        insert_docs(self, engine: any, overwrite=False,
+        progress_bar=progress_bar_nothing, **kwargs) -> None:
+            Inserts documentation into the code using a `DocEngine` object.
+        _insert_docs(self, node: any, engine: DocEngine, overwrite: bool) ->
+        None:
+            Inserts documentation for a given node using the specified
+            documentation engine.
     """
 
     def __init__(self, filepath: str):
@@ -151,10 +146,9 @@ class FortranCode:
             None
         Notes:
             If the module node does not have any documentation or if the
-            overwrite parameter is set to True,
-            the function generates documentation for the module using the
-            DocEngine object and writes it to
-            the module node's doc attribute.
+            overwrite parameter is set to True, the function generates
+            documentation for the module using the DocEngine object and writes
+            it to the module node's doc attribute.
         """
         if not node.doc or overwrite:
             node.write_doc(engine.generate_doc(node.to_str(), lang='Fortran', statement_kind='module'))

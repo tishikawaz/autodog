@@ -1,7 +1,24 @@
-from autodog.core import(
-    code,
-    engine
-)
+"""
+AutoDog Application
+This function is the entry point for the AutoDog application. It
+generates documentation for a specific segment of code.
+Args:
+    path (str): The path to the code segment to be documented.
+    -e, --engine (str, optional): The documentation generation engine
+    name.
+        Defaults to 'chatgpt'.
+    -k, --key (str, optional): The API key for the documentation
+    generation
+        engine. Defaults to an empty string.
+    -r, --recursively (bool, optional): Flag to recursively generate
+        documentation in the entire directory structure. Defaults to
+        False.
+    -o, --overwrite (bool, optional): Flag to overwrite existing
+        documentation. Defaults to False.
+Returns:
+    None
+"""
+from autodog.core import code, engine
 import argparse
 import glob
 
@@ -12,9 +29,11 @@ def app():
     generates documentation for a specific segment of code.
     Args:
         path (str): The path to the code segment to be documented.
-        -e, --engine (str, optional): The documentation generation engine name.
+        -e, --engine (str, optional): The documentation generation engine
+        name.
         Defaults to 'chatgpt'.
-        -k, --key (str, optional): The API key for the documentation generation
+        -k, --key (str, optional): The API key for the documentation
+        generation
         engine. Defaults to an empty string.
         -r, --recursively (bool, optional): Flag to recursively generate
         documentation in the entire directory structure. Defaults to False.
@@ -42,6 +61,5 @@ def app():
         c = code(args.path)
         c.insert_docs(e, overwrite=args.overwrite)
         c.write()
-
 if __name__ == '__main__':
     app()

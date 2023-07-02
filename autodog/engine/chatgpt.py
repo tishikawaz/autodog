@@ -9,6 +9,46 @@ documentation. The class also has several helper methods such as
 `_make_prompt`, `_sleep_rate_limit`, and `_format`. The `_indent_level`
 method is a private helper method that calculates the indentation level
 of a given line.
+The class `ChatGPTEngine` initializes an instance with the following
+parameters:
+- `notes` (list, optional): A list of notes to be used for the instance.
+Default value is an empty list.
+- `doc_type` (str, optional): A string representing the type of
+documentation to be generated. Default value is 'docstring'.
+- `api_key` (str, optional): A string representing the OpenAI API key to
+be used for generating documentation. Default value is an empty string.
+- `model` (str, optional): A string representing the OpenAI model to be
+used for generating documentation. Default value is 'gpt-3.5-turbo'.
+- `line_length` (int, optional): An integer representing the maximum
+line length for the generated documentation. Default value is 72.
+The class has the following methods:
+- `__init__(self, notes=[], doc_type='docstring', api_key='',
+model='gpt-3.5-turbo-0613', line_length=72)`: Initializes an instance of
+the class with the specified parameters.
+- `_make_prompt(self, code: str, lang: str, statement_kind: str,
+context='') -> str`: Creates a formatted prompt asking the user to
+suggest a document for the given code.
+- `_sleep_rate_limit(self) -> None`: Limits the rate of requests made to
+an API.
+- `generate_doc(self, code: str, lang: str, statement_kind: str,
+context='') -> str`: Generates documentation for the given code using
+the OpenAI chatbot.
+- `_get_doc(response: str, lang: str, line_length: int) -> str`: Formats
+the given documentation string based on the specified language and line
+length.
+- `_get_doc_python(line_length: int, response: str)`: Formats the given
+Python docstring to fit within the specified line length.
+- `_get_doc_fortran(line_length: int, response: str)`: Formats the given
+Fortran documentation string by removing leading exclamation marks,
+wrapping lines to the specified line length, and preserving the
+indentation level.
+- `_all_lines_are_not_comment(lines: list[str], comment='!') -> bool`:
+Checks if all lines in the given list are not comments.
+- `_first_indentation_level(lines: list[str]) -> int`: Returns the
+indentation level of the first non-empty line in the given list of
+lines.
+- `_indent_level(line: str) -> int`: Returns the number of leading
+spaces in a given string.
 """
 from autodog.engine.docengine import DocEngine
 import openai
@@ -22,16 +62,20 @@ class ChatGPTEngine(DocEngine):
     Initializes an instance of the class with the following parameters:
     Args:
         notes (list, optional): A list of notes to be used for the instance.
-        Default value is an empty list.
+            Default value is an empty list.
         doc_type (str, optional): A string representing the type of
-        documentation to be generated. Default value is 'docstring'.
+        documentation
+            to be generated. Default value is 'docstring'.
         api_key (str, optional): A string representing the OpenAI API key to
-        be used for generating documentation. Default value is an empty
-        string.
+        be
+            used for generating documentation. Default value is an empty
+            string.
         model (str, optional): A string representing the OpenAI model to be
-        used for generating documentation. Default value is 'gpt-3.5-turbo'.
+        used
+            for generating documentation. Default value is 'gpt-3.5-turbo'.
         line_length (int, optional): An integer representing the maximum
-        line length for the generated documentation. Default value is 72.
+        line
+            length for the generated documentation. Default value is 72.
     Returns:
         None
     """
@@ -98,22 +142,17 @@ class ChatGPTEngine(DocEngine):
 
     def _sleep_rate_limit(self) -> None:
         """Limits the rate of requests made to an API.
-            This function takes no arguments and returns nothing. It first
-            checks if the `last_request_time` attribute is set to 0, which
-            indicates that no
-            requests have been made yet. If this is the case, the function
-            simply
-            returns.
-            Otherwise, the function calculates the time difference between the
-            current time and the `last_request_time` attribute. It then sleeps
-            for the
-            maximum of 0 and 20 minus the time difference. This ensures that at
-            least 20
-            seconds have passed since the last request was made before making
-            another
-            request.
-            This function is intended to be used as a helper function within a
-            larger API client class.
+        This function takes no arguments and returns nothing. It first checks if
+        the `last_request_time` attribute is set to 0, which indicates that no
+        requests have been made yet. If this is the case, the function simply
+        returns.
+        Otherwise, the function calculates the time difference between the
+        current time and the `last_request_time` attribute. It then sleeps for
+        the maximum of 0 and 20 minus the time difference. This ensures that at
+        least 20 seconds have passed since the last request was made before
+        making another request.
+        This function is intended to be used as a helper function within a
+        larger API client class.
         """
         if self.last_request_time == 0:
             return
@@ -133,9 +172,7 @@ class ChatGPTEngine(DocEngine):
         `openai.ChatCompletion.create` method.
         Finally, it formats and returns the response received from the chatbot.
         """
-        prompt = [
-            {'role': 'system', 'content': 'You are an experienced programmer.'},
-            {'role': 'user', 'content': self._make_prompt(code, lang, statement_kind, context)}]
+        prompt = [{'role': 'system', 'content': 'You are an experienced programmer.'}, {'role': 'user', 'content': self._make_prompt(code, lang, statement_kind, context)}]
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(model=self.model, messages=prompt, temperature=0.0)
         self.last_request_time = time.time()
@@ -146,7 +183,7 @@ def _get_doc(response: str, lang: str, line_length: int) -> str:
     """Formats the given documentation string based on the specified language
     and line length.
     Args:
-        doc (str): The documentation string to be formatted.
+        response (str): The documentation string to be formatted.
         lang (str): The language for which the documentation string should
         be formatted.
         line_length (int): The maximum length of each line in the formatted
@@ -162,8 +199,7 @@ def _get_doc(response: str, lang: str, line_length: int) -> str:
     return formatter[lang.lower()](line_length, response)
 
 def _get_doc_python(line_length: int, response: str):
-    """
-    Formats the given Python docstring to fit within the specified line
+    """Formats the given Python docstring to fit within the specified line
     length.
     Args:
         line_length (int): The maximum length of each line.

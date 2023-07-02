@@ -63,7 +63,7 @@ You can set the following options.
 engine = autodog.engine(
     api_key     = 'YOUR-API-KEY',         # Default is ''. Please set your key.
     doc_type    = 'Numpy style docstring' # Default is 'docstring'.
-    model       = 'gpt-3.5-turbo',        # Default is 'gpt-3.5-tubo'. You can chose '/v1/chat/completions' from https://platform.openai.com/docs/models/model-endpoint-compatibility.
+    model       = 'gpt-3.5-turbo',        # Default is 'gpt-3.5-tubo-0613'. You can choose from '/v1/chat/completions' in https://platform.openai.com/docs/models/model-endpoint-compatibility.
     line_length = 128 # Default is 72.
 )
 ```
