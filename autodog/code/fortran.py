@@ -16,7 +16,7 @@ for each type of node.
 """
 from autodog.ast.fortran import FortranAST, ModuleNode, TypeNode, FunctionNode, SubroutineNode, ProgramNode
 from autodog.engine.docengine import DocEngine
-from autodog.code.utils import progress_bar_nothing
+from autodog.utils.progress import progress_bar_nothing
 from functools import singledispatchmethod
 
 class FortranCode:

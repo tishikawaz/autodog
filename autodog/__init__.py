@@ -12,4 +12,5 @@ from autodog.code.fortran import FortranCode
 from autodog.code.python import PyCode
 from autodog.engine.chatgpt import ChatGPTEngine
 from autodog.engine.dummy import DummyEngine
-__all__ = ['code', 'engineFortranCode', 'PyCode', 'ChatGPTEngine', 'DummyEngine']
+from autodog.utils.progress import progress_bar_nothing
+__all__ = ['code', 'engineFortranCode', 'PyCode', 'ChatGPTEngine', 'DummyEngine', 'progress_bar_nothing']

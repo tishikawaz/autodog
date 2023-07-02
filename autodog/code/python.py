@@ -17,7 +17,7 @@ also adjusts the indentation of the docstring to match the indentation
 of the node's body.
 """
 from autodog.engine.docengine import DocEngine
-from autodog.code.utils import progress_bar_nothing
+from autodog.utils.progress import progress_bar_nothing
 from functools import singledispatchmethod
 import ast
 import os
