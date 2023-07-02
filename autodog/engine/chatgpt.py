@@ -36,7 +36,7 @@ class ChatGPTEngine(DocEngine):
         None
     """
 
-    def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo', line_length=72):
+    def __init__(self, notes=[], doc_type='docstring', api_key='', model='gpt-3.5-turbo-0613', line_length=72):
         """Initializes an instance of the class with the following parameters:
             Args:
                 notes (list, optional): A list of notes to be used for the
@@ -196,7 +196,7 @@ def _get_doc_fortran(line_length: int, response: str):
         return ''.join([textwrap.fill(line[level:], line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep for line in comment_lines])
     comment_lines = [line for line in lines if '!' in line]
     level = _first_indentation_level(comment_lines)
-    return ''.join([textwrap.fill(re.sub('!', '', line[level:]), line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep for line in comment_lines])
+    return ''.join([textwrap.fill(re.sub('!', '', line[level:]).strip(), line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep for line in comment_lines])
 
 def _all_lines_are_not_comment(lines: list[str], comment='!') -> bool:
     """
