@@ -133,15 +133,16 @@ class ChatGPTEngine(DocEngine):
         `openai.ChatCompletion.create` method.
         Finally, it formats and returns the response received from the chatbot.
         """
-        prompt = self._make_prompt(code, lang, statement_kind, context)
-        messages = [{'role': 'system', 'content': 'You are an experienced programmer.'}, {'role': 'user', 'content': prompt}]
+        prompt = [
+            {'role': 'system', 'content': 'You are an experienced programmer.'},
+            {'role': 'user', 'content': self._make_prompt(code, lang, statement_kind, context)}]
         self._sleep_rate_limit()
-        response = openai.ChatCompletion.create(model=self.model, messages=messages, temperature=0.0)
+        response = openai.ChatCompletion.create(model=self.model, messages=prompt, temperature=0.0)
         self.last_request_time = time.time()
-        doc = response['choices'][0]['message']['content']
-        return _format(doc, lang, self.line_length)
+        message = response['choices'][0]['message']['content']
+        return _get_doc(message, lang, self.line_length)
 
-def _format(doc: str, lang: str, line_length: int) -> str:
+def _get_doc(response: str, lang: str, line_length: int) -> str:
     """Formats the given documentation string based on the specified language
     and line length.
     Args:
@@ -155,40 +156,40 @@ def _format(doc: str, lang: str, line_length: int) -> str:
     Raises:
         KeyError: If the specified language is not supported.
     """
-    if not doc:
+    if not response:
         return ''
-    formatter = {'python': _format_python, 'fortran': _format_fortran}
-    return formatter[lang.lower()](line_length, doc)
+    formatter = {'python': _get_doc_python, 'fortran': _get_doc_fortran}
+    return formatter[lang.lower()](line_length, response)
 
-def _format_python(line_length: int, doc: str):
+def _get_doc_python(line_length: int, response: str):
     """
     Formats the given Python docstring to fit within the specified line
     length.
     Args:
         line_length (int): The maximum length of each line.
-        doc (str): The Python docstring to be formatted.
+        response (str): The response from chat gpt.
     Returns:
         str: The formatted docstring.
     """
-    segments = doc.split('"""')
+    segments = response.split('"""')
     if len(segments) > 2:
         lines = segments[1].splitlines()
         level = _first_indentation_level(lines)
         return ''.join([textwrap.fill(line[level:], line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep for line in lines])
-    lines = doc.splitlines()
+    lines = response.splitlines()
     return ''.join([textwrap.fill(line, line_length, subsequent_indent=' ' * _indent_level(line)) + os.linesep for line in lines if not any((s == line for s in ['```', '"""', "'''"]))])
 
-def _format_fortran(line_length: int, doc: str):
+def _get_doc_fortran(line_length: int, response: str):
     """Formats the given Fortran documentation string by removing leading
     exclamation marks, wrapping lines to the specified line length, and
     preserving the indentation level.
     Args:
         line_length (int): The maximum length of each line after wrapping.
-        doc (str): The Fortran documentation string to be formatted.
+        response (str): The response string from chatgpt.
     Returns:
         str: The formatted Fortran documentation string.
     """
-    lines = doc.splitlines()
+    lines = response.splitlines()
     if _all_lines_are_not_comment(lines):
         comment_lines = [line for line in lines if not any((s == line for s in ['```', '"""', "'''"]))]
         level = _first_indentation_level(comment_lines)
