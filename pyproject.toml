@@ -25,4 +25,4 @@ dependencies = [
 "Bug Tracker" = "https://github.com/tishikawaz/autodog/issues"
 
 [project.scripts]
-pylint = "autodog.app:app"
+autodog = "autodog:app"
