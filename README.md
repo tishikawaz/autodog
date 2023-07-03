@@ -77,13 +77,13 @@ You can set the following options:
 ```python
 code.insert_docs(
     engine,
-    overwrite=True
-    progress_bar=tqdm
-    kwargs
+    overwrite=True,
+    progress_bar=tqdm,
+    args...
 )
 ```
 
-where `overwrite` is the option for overwriting code documentation and `progress_bar` is a progress meter function (such as [tqdm](https://github.com/tqdm/tqdm)).
+where `overwrite` is the option for overwriting code documentation and `progress_bar` is a progress bar object (such as [tqdm](https://github.com/tqdm/tqdm) and `progress_bar` we provide).
 
 ### Write code options
 
