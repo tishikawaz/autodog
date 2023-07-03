@@ -19,6 +19,7 @@ Returns:
     None
 """
 from autodog.core import code, engine
+from autodog.utils.progress import progress_bar
 import argparse
 import glob
 
@@ -43,7 +44,7 @@ def app():
         None
     """
     parser = argparse.ArgumentParser(prog='AutoDog', description='An automatic documentation generator to document a specific segment of code')
-    parser.add_argument('Filepath', help='Code filepath you want to write a documentation automatically.')
+    parser.add_argument('path', help='Code filepath you want to write a documentation automatically.')
     parser.add_argument('-e', '--engine', help='Documentation generation engin name.', default='chatgpt', choices=['chatgpt', 'dummy'])
     parser.add_argument('-k', '--key', help='API key.', default='')
     parser.add_argument('-r', '--recursively', help='Recursively generate documentation in the entire directory structure.', action='store_true')
@@ -55,11 +56,11 @@ def app():
             for file in glob.glob(f'{dir}/*.py'):
                 c = code(file)
                 print('Insert documentation in', file)
-                c.insert_docs(e, overwrite=args.overwrite)
+                c.insert_docs(e, overwrite=args.overwrite, progress_bar=progress_bar)
                 c.write()
     else:
         c = code(args.path)
-        c.insert_docs(e, overwrite=args.overwrite)
+        c.insert_docs(e, overwrite=args.overwrite, progress_bar=progress_bar)
         c.write()
 if __name__ == '__main__':
     app()
