@@ -75,10 +75,15 @@ where `api_key` is the OpenAI API key, `doc_type` is the documentation type, `mo
 You can set the following options:
 
 ```python
-code.insert_docs(engine, overwrite=True)
+code.insert_docs(
+    engine,
+    overwrite=True
+    progress_bar=tqdm
+    kwargs
+)
 ```
 
-where `overwrite` is the option for overwriting code documentation.
+where `overwrite` is the option for overwriting code documentation and `progress_bar` is a progress meter function (such as [tqdm](https://github.com/tqdm/tqdm)).
 
 ### Write code options
 
