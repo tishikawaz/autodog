@@ -43,11 +43,11 @@ def app():
         None
     """
     parser = argparse.ArgumentParser(prog='AutoDog', description='An automatic documentation generator to document a specific segment of code')
-    parser.add_argument('path')
-    parser.add_argument('-e', '--engine', help='Documentation generation engin name.', default='chatgpt')
+    parser.add_argument('Filepath', help='Code filepath you want to write a documentation automatically.')
+    parser.add_argument('-e', '--engine', help='Documentation generation engin name.', default='chatgpt', choices=['chatgpt', 'dummy'])
     parser.add_argument('-k', '--key', help='API key.', default='')
-    parser.add_argument('-r', '--recursively', help='Recursively generate documentation in the entire directory structure.', default=False)
-    parser.add_argument('-o', '--overwrite', help='Overwrite documentation.', default=False)
+    parser.add_argument('-r', '--recursively', help='Recursively generate documentation in the entire directory structure.', action='store_true')
+    parser.add_argument('-o', '--overwrite', help='Overwrite documentation.', action='store_true')
     args = parser.parse_args()
     e = engine(name=args.engine, api_key=args.key)
     if args.recursively:
