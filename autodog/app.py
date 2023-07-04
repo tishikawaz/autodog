@@ -45,15 +45,16 @@ def app():
     """
     parser = argparse.ArgumentParser(prog='AutoDog', description='An automatic documentation generator to document a specific segment of code')
     parser.add_argument('path', help='Code filepath you want to write a documentation automatically.')
-    parser.add_argument('-e', '--engine', help='Documentation generation engin name.', default='chatgpt', choices=['chatgpt', 'dummy'])
     parser.add_argument('-k', '--key', help='API key.', default='')
     parser.add_argument('-r', '--recursively', help='Recursively generate documentation in the entire directory structure.', action='store_true')
-    parser.add_argument('-o', '--overwrite', help='Overwrite documentation.', action='store_true')
+    parser.add_argument('-e', '--extension', help='File extension you want to select.', default='py', choices=['py', 'f90', 'f'])
+    parser.add_argument('--engine', help='Documentation generation engin name.', default='chatgpt', choices=['chatgpt', 'dummy'])
+    parser.add_argument('--overwrite', help='Overwrite documentation.', action='store_true')
     args = parser.parse_args()
     e = engine(name=args.engine, api_key=args.key)
     if args.recursively:
         for dir in glob.glob(f'{args.path}/**/', recursive=True):
-            for file in glob.glob(f'{dir}/*.py'):
+            for file in glob.glob(f'{dir}/*.{parser.extension}'):
                 c = code(file)
                 print('Insert documentation in', file)
                 c.insert_docs(e, overwrite=args.overwrite, progress_bar=progress_bar)
