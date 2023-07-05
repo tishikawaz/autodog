@@ -176,7 +176,7 @@ class StatementNode(BaseNode):
         """
         code = self.statement + os.linesep
         if self.doc:
-            code += self.doc
+            code += self.doc + os.linesep
         code += _reconstruct_code_block([child.to_str() for child in self.children]) + os.linesep
         code += self.end_statement
         return code
@@ -191,7 +191,7 @@ class StatementNode(BaseNode):
         write_doc('This is a sample documentation string.')
         """
         doc_lines = doc.splitlines()
-        self.doc = ''.join([' ' * self.indent_level + '! ' + doc + os.linesep for doc in doc_lines])
+        self.doc = (''.join([' ' * self.indent_level + f'! {doc}'.rstrip() + os.linesep for doc in doc_lines])).rstrip(os.linesep)
 
 class ProgramNode(StatementNode):
     """
@@ -250,6 +250,58 @@ class ModuleNode(StatementNode):
 
     def __init__(self, code: str):
         super().__init__(code)
+
+class FortranAST:
+    """
+    Initializes a new instance of the FortranAST class.
+    Args:
+        code (str): The code to be used for creating the BaseNode.
+    Returns:
+        None
+    Methods:
+        - to_str(): Returns a string representation of the tree.
+        - walk(): Returns a list of all the elements in the tree, obtained
+        by performing a depth-first traversal.
+        - _walk(node: StatementNode): Recursively walks through the tree of
+        StatementNodes starting from the given node and returns a list of
+        all nodes encountered.
+    """
+
+    def __init__(self, code: str):
+        """Initializes a new instance of the class.
+        Args:
+            code (str): The code to be used for creating the BaseNode.
+        Returns:
+            None
+        """
+        self.tree = BaseNode(code)
+
+    def to_str(self):
+        """Returns a string representation of the tree.
+        """
+        return self.tree.to_str()
+
+    def walk(self) -> list:
+        """Returns a list of all the elements in the tree, obtained by performing a
+        depth-first traversal.
+        """
+        return self._walk(self.tree)
+
+    def _walk(self, node: StatementNode) -> list:
+        """Recursively walks through the tree of StatementNodes starting from the
+        given node and returns a list of all nodes encountered.
+        Args:
+            node (StatementNode): The starting node of the tree.
+        Returns:
+            list: A list of StatementNodes encountered during the traversal.
+        """
+        if not node.children:
+            return [node]
+        nodes = []
+        for child in node.children:
+            nodes += [child]
+            nodes += self._walk(child)
+        return nodes
 
 def _remove_comment(line: str) -> str:
     """Removes the comment from the given line.
@@ -414,55 +466,3 @@ def _is_type_statement(line: str) -> bool:
     """
     declaration = re.split('[,]|[:]+', line)[0]
     return _match_whole(declaration.lower(), 'type') and (not '(' in declaration)
-
-class FortranAST:
-    """
-    Initializes a new instance of the FortranAST class.
-    Args:
-        code (str): The code to be used for creating the BaseNode.
-    Returns:
-        None
-    Methods:
-        - to_str(): Returns a string representation of the tree.
-        - walk(): Returns a list of all the elements in the tree, obtained
-        by performing a depth-first traversal.
-        - _walk(node: StatementNode): Recursively walks through the tree of
-        StatementNodes starting from the given node and returns a list of
-        all nodes encountered.
-    """
-
-    def __init__(self, code: str):
-        """Initializes a new instance of the class.
-        Args:
-            code (str): The code to be used for creating the BaseNode.
-        Returns:
-            None
-        """
-        self.tree = BaseNode(code)
-
-    def to_str(self):
-        """Returns a string representation of the tree.
-        """
-        return self.tree.to_str()
-
-    def walk(self) -> list:
-        """Returns a list of all the elements in the tree, obtained by performing a
-        depth-first traversal.
-        """
-        return self._walk(self.tree)
-
-    def _walk(self, node: StatementNode) -> list:
-        """Recursively walks through the tree of StatementNodes starting from the
-        given node and returns a list of all nodes encountered.
-        Args:
-            node (StatementNode): The starting node of the tree.
-        Returns:
-            list: A list of StatementNodes encountered during the traversal.
-        """
-        if not node.children:
-            return [node]
-        nodes = []
-        for child in node.children:
-            nodes += [child]
-            nodes += self._walk(child)
-        return nodes

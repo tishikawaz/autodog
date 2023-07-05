@@ -195,8 +195,8 @@ def _get_doc(response: str, lang: str, line_length: int) -> str:
     """
     if not response:
         return ''
-    formatter = {'python': _get_doc_python, 'fortran': _get_doc_fortran}
-    return formatter[lang.lower()](line_length, response)
+    getter = {'python': _get_doc_python, 'fortran': _get_doc_fortran}
+    return getter[lang.lower()](line_length, response)
 
 def _get_doc_python(line_length: int, response: str):
     """Formats the given Python docstring to fit within the specified line
@@ -227,7 +227,7 @@ def _get_doc_fortran(line_length: int, response: str):
     """
     lines = response.splitlines()
     if _all_lines_are_not_comment(lines):
-        comment_lines = [line for line in lines if not any((s == line for s in ['```', '"""', "'''"]))]
+        comment_lines = [line for line in lines if not line in '```']
         level = _first_indentation_level(comment_lines)
         return ''.join([textwrap.fill(line[level:], line_length, subsequent_indent=' ' * _indent_level(line[level:])) + os.linesep for line in comment_lines])
     comment_lines = [line for line in lines if '!' in line]
@@ -245,7 +245,7 @@ def _all_lines_are_not_comment(lines: list[str], comment='!') -> bool:
         bool: True if all lines are not comments, False otherwise.
     """
     for line in lines:
-        if not comment in line:
+        if comment in line:
             return False
     return True
 
