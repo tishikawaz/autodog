@@ -20,8 +20,33 @@ Returns:
 """
 from autodog.core import code, engine
 from autodog.utils.progress import progress_bar
+import openai
 import argparse
 import glob
+import os
+from time import sleep
+
+def _insert_doc(code, engine, overwrite, n_tries, interval=20):
+    for n in range(n_tries):
+        try:
+            code.insert_docs(engine, overwrite=overwrite,  progress_bar=progress_bar)
+            return
+        except openai.error.ServiceUnavailableError as e:
+            print()
+            print(f'[{n}/{n_tries} try]: An exception was thrown from `insert_docs` due to the following:')
+            print(f'Service Unavailable Error: {e}')
+            print(f'Continue.')
+            sleep(interval)
+            continue
+        except openai.error.APIError as e:
+            print()
+            print(f'[{n}/{n_tries} try]: An exception was thrown from `insert_docs` due to the following:')
+            print(f'API Error: {e}')
+            print(f'Continue.')
+            sleep(interval)
+            continue
+    print('Give up!')
+    return
 
 def app():
     """
@@ -50,18 +75,19 @@ def app():
     parser.add_argument('-e', '--extension', help='File extension you want to select.', default='py', choices=['py', 'f90', 'f'])
     parser.add_argument('--engine', help='Documentation generation engin name.', default='chatgpt', choices=['chatgpt', 'dummy'])
     parser.add_argument('--overwrite', help='Overwrite documentation.', action='store_true')
+    parser.add_argument('--tries', help='Number of reconnections on server errors.', default=3, type=int)
     args = parser.parse_args()
     e = engine(name=args.engine, api_key=args.key)
     if args.recursively:
         for dir in glob.glob(f'{args.path}/**/', recursive=True):
             for file in glob.glob(f'{dir}/*.{parser.extension}'):
                 c = code(file)
-                print('Insert documentation in', file)
-                c.insert_docs(e, overwrite=args.overwrite, progress_bar=progress_bar)
+                print('Insert documentation to', file)
+                _insert_doc(c, e, args.overwrite, args.tries)
                 c.write()
     else:
         c = code(args.path)
-        c.insert_docs(e, overwrite=args.overwrite, progress_bar=progress_bar)
+        _insert_doc(c, e, args.overwrite, args.tries)
         c.write()
 if __name__ == '__main__':
     app()
