@@ -121,12 +121,16 @@ def app():
     parser.add_argument(
         "--model", help="ChatGPT model name.", default="gpt-3.5-turbo-0613",
     )
+    parser.add_argument(
+        "--doc-type", help="Documentation type.", default="docstring",
+    )
     args = parser.parse_args()
     e = engine(
         name=args.engine,
         api_key=args.key,
         line_length=args.line_length,
         model=args.model,
+        doc_type=args.doc_type
     )
     if args.recursively:
         for dir in glob.glob(f"{args.path}/**/", recursive=True):
