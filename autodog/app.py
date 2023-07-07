@@ -80,7 +80,7 @@ def app():
     e = engine(name=args.engine, api_key=args.key)
     if args.recursively:
         for dir in glob.glob(f'{args.path}/**/', recursive=True):
-            for file in glob.glob(f'{dir}/*.{parser.extension}'):
+            for file in glob.glob(f'{dir}/*.{args.extension}'):
                 c = code(file)
                 print('Insert documentation to', file)
                 _insert_doc(c, e, args.overwrite, args.tries)

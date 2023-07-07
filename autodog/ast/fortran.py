@@ -410,7 +410,8 @@ def _make_nodes(code: str) -> list:
     """
     lines = code.splitlines()
     for (line_num, line) in enumerate(lines):
-        if _match_whole(line.lower(), 'program'):
+        statement = _remove_comment(line)
+        if _match_whole(statement.lower(), 'program'):
             (before_block, block, after_block) = _make_blocks(lines, 'program', line_num)
             nodes = []
             if before_block:
@@ -419,7 +420,7 @@ def _make_nodes(code: str) -> list:
             if after_block:
                 nodes += _make_nodes(_reconstruct_code_block(after_block))
             return nodes
-        elif _match_whole(line.lower(), 'module'):
+        elif _match_whole(statement.lower(), 'module'):
             (before_block, block, after_block) = _make_blocks(lines, 'module', line_num)
             nodes = []
             if before_block:
@@ -428,7 +429,7 @@ def _make_nodes(code: str) -> list:
             if after_block:
                 nodes += _make_nodes(_reconstruct_code_block(after_block))
             return nodes
-        elif _match_whole(line.lower(), 'function'):
+        elif _match_whole(statement.lower(), 'function'):
             (before_block, block, after_block) = _make_blocks(lines, 'function', line_num)
             nodes = []
             if before_block:
@@ -437,7 +438,7 @@ def _make_nodes(code: str) -> list:
             if after_block:
                 nodes += _make_nodes(_reconstruct_code_block(after_block))
             return nodes
-        elif _match_whole(line.lower(), 'subroutine'):
+        elif _match_whole(statement.lower(), 'subroutine'):
             (before_block, block, after_block) = _make_blocks(lines, 'subroutine', line_num)
             nodes = []
             if before_block:
@@ -446,7 +447,7 @@ def _make_nodes(code: str) -> list:
             if after_block:
                 nodes += _make_nodes(_reconstruct_code_block(after_block))
             return nodes
-        elif _is_type_statement(line):
+        elif _is_type_statement(statement):
             (before_block, block, after_block) = _make_blocks(lines, 'type', line_num)
             nodes = []
             if before_block:

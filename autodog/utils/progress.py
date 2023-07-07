@@ -30,6 +30,6 @@ def progress_bar(iterable_object:any, bar_char = '█', **kwargs) -> any:
         n_char = int(((i + 1) / n_objs) * bar_length)
         n_blank = bar_length - n_char
         progress_bar = '|' + bar_char * n_char + ' ' * n_blank + '|'
-        print("\r", progress_bar, end="")
+        print("\r", progress_bar, end="", flush=True)
         yield obj
     print("\r", progress_bar, "Finished.")
