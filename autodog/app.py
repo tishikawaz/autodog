@@ -40,7 +40,7 @@ def _insert_doc(code, engine, overwrite, n_tries, interval=20):
         except openai.error.ServiceUnavailableError as e:
             print()
             print(
-                f"[{n}/{n_tries} try]: An exception was thrown from `insert_docs` due to the following:",
+                f"[{n+1}/{n_tries} try]: An exception was thrown from `insert_docs` due to the following:",
             )
             print(f"Service Unavailable Error: {e}")
             print("Continue.")
