@@ -16,11 +16,13 @@ The module also defines two custom exceptions: `UnknownEngineName` and
 `UnknownFileExtension`. These exceptions can be raised when encountering
 unknown engine names or file extensions, respectively.
 """
+import os
+
 from autodog.code.fortran import FortranCode
 from autodog.code.python import PyCode
 from autodog.engine.chatgpt import ChatGPTEngine
 from autodog.engine.dummy import DummyEngine
-import os
+
 
 class UnknownEngineName(Exception):
     """The `UnknownEngineName` class is an exception that can be raised when an
@@ -28,7 +30,8 @@ class UnknownEngineName(Exception):
     used to handle cases where the engine name is not recognized or
     supported by the program.
     """
-    pass
+
+
 
 class UnknownFileExtension(Exception):
     """The `UnknownFileExtension` class is an exception that can be raised when
@@ -36,28 +39,36 @@ class UnknownFileExtension(Exception):
     handle cases where a program is unable to process a file due to an
     unsupported file extension. Attributes: None. Methods: None.
     """
-    pass
 
-def engine(name='chatgpt', **kwargs):
+
+
+def engine(name="chatgpt", **kwargs):
     """The `engine` function is a factory function that returns an instance of
     a chatbot engine based on the `name` parameter passed to it.
-    Parameters:
+
+    Parameters
+    ----------
     - `name` (str): A string representing the name of the engine to be
     returned. Default value is `'chatgpt'`.
     - `**kwargs` (dict): Any additional keyword arguments to be passed to
     the engine instance.
-    Returns:
+
+    Returns
+    -------
     - An instance of the engine class specified by the `name` parameter.
-    Raises:
+
+    Raises
+    ------
     - `UnknownEngineName`: If `name` is neither `'chatgpt'` nor `'dummy'`.
     Example:
-    engine('chatgpt', model='gpt2', temperature=0.7)
+    engine('chatgpt', model='gpt2', temperature=0.7).
     """
-    if name == 'chatgpt':
+    if name == "chatgpt":
         return ChatGPTEngine(**kwargs)
-    elif name == 'dummy':
+    elif name == "dummy":
         return DummyEngine(**kwargs)
     raise UnknownEngineName
+
 
 def code(filepath: str, **kwargs):
     """Determine the type of code file based on its extension and return an
@@ -68,8 +79,8 @@ def code(filepath: str, **kwargs):
     :raises UnknownFileExtension: If the file extension is not recognized.
     """
     extension = os.path.splitext(filepath)[1][1:]
-    if any((s in extension.lower() for s in ['f', 'f90'])):
+    if any(s in extension.lower() for s in ["f", "f90"]):
         return FortranCode(filepath)
-    elif 'py' in extension.lower():
+    elif "py" in extension.lower():
         return PyCode(filepath)
     raise UnknownFileExtension

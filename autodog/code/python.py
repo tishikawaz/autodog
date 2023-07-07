@@ -16,11 +16,13 @@ new docstring as the first statement in the node's body. The function
 also adjusts the indentation of the docstring to match the indentation
 of the node's body.
 """
-from autodog.engine.docengine import DocEngine
-from autodog.utils.progress import progress_bar_nothing
-from functools import singledispatchmethod
 import ast
 import os
+from functools import singledispatchmethod
+
+from autodog.engine.docengine import DocEngine
+from autodog.utils.progress import progress_bar_nothing
+
 
 class PyCode:
     """This is a Python class that provides methods to manipulate Python code.
@@ -28,7 +30,9 @@ class PyCode:
     module. It provides methods to convert the parsed code back to a string,
     write the code to a file, and insert documentation strings into the code
     using a `DocEngine` object.
-    Methods:
+
+    Methods
+    -------
     - `__init__(self, filepath: str) -> None`: Initialize a new instance of
     the class with the given file path. The file is opened in read mode and
     its contents are parsed using the `ast` module. The resulting abstract
@@ -62,7 +66,7 @@ class PyCode:
     function returns `None`.
     """
 
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str) -> None:
         """Initialize a new instance of the class with the given file path. The
         file is opened in read mode and its contents are parsed using the ast
         module. The resulting abstract syntax tree is stored in the 'tree'
@@ -77,39 +81,54 @@ class PyCode:
         does and how it works.
         """
         self.filepath = filepath
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             self.tree = ast.parse(f.read())
 
     def to_str(self) -> str:
         """Converts an abstract syntax tree (AST) to a string representation.
+
         Args:
+        ----
             self (AST): The AST object to be converted.
+
         Returns:
+        -------
             str: A string representation of the AST.
+
         Raises:
+        ------
             None.
         """
         return ast.unparse(self.tree)
 
-    def write(self, filepath='') -> None:
+    def write(self, filepath="") -> None:
         """Writes the contents of the current object to a file.
+
         Args:
+        ----
             filepath (str, optional): The path of the file to write to. If not
             provided, the method writes to the original file.
+
         Returns:
+        -------
             None: This method does not return any value.
+
         Raises:
+        ------
             FileNotFoundError: If the specified `filepath` does not exist.
+
         Notes:
+        -----
             - If `filepath` is an empty string, the method writes to the
             original file.
             - If `filepath` is not empty, the method writes to the file
             specified by `filepath`.
         """
-        if filepath == '':
+        if filepath == "":
             return self._write_to_original()
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             f.write(self.to_str())
+            return None
 
     def _write_to_original(self) -> None:
         """Writes the string representation of the object to the file specified by
@@ -117,13 +136,17 @@ class PyCode:
         (`None`). The file is opened in write mode (`'w'`) and any existing
         content is overwritten. If the file does not exist, it is created.
         """
-        with open(self.filepath, 'w') as f:
+        with open(self.filepath, "w") as f:
             f.write(self.to_str())
 
-    def insert_docs(self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs) -> None:
+    def insert_docs(
+        self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
+    ) -> None:
         """Inserts documentation strings for all nodes in the abstract syntax tree
         of the current object into the specified database engine.
+
         Args:
+        ----
             engine (any): The database engine to insert the documentation
             strings into.
             overwrite (bool, optional): Determines whether to overwrite existing
@@ -132,7 +155,9 @@ class PyCode:
             to progress_bar_nothing.
             **kwargs: Additional keyword arguments to be passed to the progress
             bar function.
+
         Returns:
+        -------
             None
         Description:
             The `insert_docs` function iterates over all nodes in the abstract
@@ -147,16 +172,19 @@ class PyCode:
     def _insert_docs(self, node: any, engine: DocEngine, overwrite: bool) -> None:
         """The `_insert_docs` function is a decorated method that inserts
         documentation for a given node using the specified documentation engine.
+
         Args:
+        ----
             node (any): The node for which documentation needs to be inserted.
             engine (DocEngine): The documentation engine to be used for
             inserting documentation.
             overwrite (bool): A flag indicating whether to overwrite existing
             documentation.
+
         Returns:
-            None
+        -------
+            None.
         """
-        pass
 
     @_insert_docs.register
     def _(self, node: ast.Module, engine: DocEngine, overwrite: bool) -> None:
@@ -165,32 +193,42 @@ class PyCode:
         If the `node` already has a docstring or `overwrite` is set to `True`,
         the function generates a new documentation using the `DocEngine` and
         inserts it into the `node`.
+
         Args:
+        ----
             node (ast.Module): The `ast.Module` node to insert documentation
             into.
             engine (DocEngine): The `DocEngine` to use for generating
             documentation.
             overwrite (bool): A flag indicating whether to overwrite an existing
             docstring in the `node`.
+
         Returns:
-            None
+        -------
+            None.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='module')
+            doc = engine.generate_doc(
+                ast.unparse(node), lang="Python", statement_kind="module",
+            )
             insert_docstring(node, doc)
 
     @_insert_docs.register
     def _(self, node: ast.FunctionDef, engine: DocEngine, overwrite: bool) -> None:
         """This function is a decorator that registers a function to insert
         docstrings into Python code.
+
         Args:
+        ----
             node (ast.FunctionDef): An AST node representing a function
             definition.
             engine (DocEngine): A `DocEngine` object used to generate the
             docstring.
             overwrite (bool): A boolean indicating whether to overwrite an
             existing docstring.
+
         Returns:
+        -------
             None
         Description:
             If the `node` does not have a docstring or `overwrite` is `True`,
@@ -200,7 +238,9 @@ class PyCode:
             `node` and the language is set to Python.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='function')
+            doc = engine.generate_doc(
+                ast.unparse(node), lang="Python", statement_kind="function",
+            )
             insert_docstring(node, doc)
 
     @_insert_docs.register
@@ -213,21 +253,27 @@ class PyCode:
         `insert_docstring` function. The function does not return anything.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='async function')
+            doc = engine.generate_doc(
+                ast.unparse(node), lang="Python", statement_kind="async function",
+            )
             insert_docstring(node, doc)
 
     @_insert_docs.register
     def _(self, node: ast.ClassDef, engine: DocEngine, overwrite: bool) -> None:
         """This function is a decorator that registers a function to insert a
         docstring for a Python class definition.
+
         Args:
+        ----
             node (ast.ClassDef): An AST (Abstract Syntax Tree) `ClassDef` node
             representing the class definition.
             engine (DocEngine): A `DocEngine` object used to generate the class
             documentation.
             overwrite (bool): A boolean value indicating whether to overwrite an
             existing docstring or not.
+
         Returns:
+        -------
             None
         Description:
             If the class definition already has a docstring or the `overwrite`
@@ -237,8 +283,11 @@ class PyCode:
             anything.
         """
         if ast.get_docstring(node) is None or overwrite:
-            doc = engine.generate_doc(ast.unparse(node), lang='Python', statement_kind='class')
+            doc = engine.generate_doc(
+                ast.unparse(node), lang="Python", statement_kind="class",
+            )
             insert_docstring(node, doc)
+
 
 def offset_lines(doc: str, level: int) -> str:
     """This function takes in a string `doc` and an integer `level` as input
@@ -251,7 +300,15 @@ def offset_lines(doc: str, level: int) -> str:
     first and last lines. The return type is a string.
     """
     lines = doc.splitlines()
-    return lines[0] + ''.join([os.linesep + ' ' * level + line if line else '' for line in lines[1:]]) + os.linesep + ' ' * level
+    return (
+        lines[0]
+        + "".join(
+            [os.linesep + " " * level + line if line else "" for line in lines[1:]],
+        )
+        + os.linesep
+        + " " * level
+    )
+
 
 def insert_docstring(node: any, doc: str) -> None:
     """This function adds a docstring to the given AST node. The node can be of
@@ -263,11 +320,20 @@ def insert_docstring(node: any, doc: str) -> None:
     the node's body. The function also adjusts the indentation of the
     docstring to match the indentation of the node's body.
     """
-    if not isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef, ast.ClassDef, ast.Module)):
+    if not isinstance(
+        node, ast.AsyncFunctionDef | ast.FunctionDef | ast.ClassDef | ast.Module,
+    ):
         return
     if not (node.body and isinstance(node.body[0], ast.Expr)):
         offset = node.body[0].col_offset
-        node.body.insert(0, ast.Expr(value=ast.Constant(offset_lines(doc, offset)), col_offset=offset, end_col_offset=offset))
+        node.body.insert(
+            0,
+            ast.Expr(
+                value=ast.Constant(offset_lines(doc, offset)),
+                col_offset=offset,
+                end_col_offset=offset,
+            ),
+        )
         return
     node_head = node.body[0].value
     if isinstance(node_head, ast.Str):

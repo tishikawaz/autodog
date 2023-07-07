@@ -7,10 +7,18 @@ used for providing chatbot engine functionalities.
 The module exports the following components: code, engineFortranCode,
 PyCode, ChatGPTEngine, DummyEngine.
 """
-from autodog.app import code, engine
-from autodog.code.fortran import FortranCode
+from autodog.app import code
 from autodog.code.python import PyCode
 from autodog.engine.chatgpt import ChatGPTEngine
 from autodog.engine.dummy import DummyEngine
-from autodog.utils.progress import progress_bar_nothing, progress_bar
-__all__ = ['code', 'engineFortranCode', 'PyCode', 'ChatGPTEngine', 'DummyEngine', 'progress_bar_nothing', 'progress_bar']
+from autodog.utils.progress import progress_bar, progress_bar_nothing
+
+__all__ = [
+    "code",
+    "engineFortranCode",
+    "PyCode",
+    "ChatGPTEngine",
+    "DummyEngine",
+    "progress_bar_nothing",
+    "progress_bar",
+]

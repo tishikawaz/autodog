@@ -2,9 +2,13 @@
 This module defines a class DummyEngine that inherits from DocEngine. It
 provides methods to generate dummy documentation for code, modules,
 classes, and functions.
-Attributes:
+
+Attributes
+----------
     dummy_doc (str): A string representing the dummy document.
-Methods:
+
+Methods
+-------
     generate_code_doc(code: str, lang: str='') -> str:
         Returns the dummy document.
     generate_module_doc(code: str, lang: str='') -> str:
@@ -13,8 +17,10 @@ Methods:
         Returns the dummy document.
     generate_func_doc(code: str, lang: str='') -> str:
         Returns the dummy document.
+
 """
 from autodog.engine.docengine import DocEngine
+
 
 class DummyEngine(DocEngine):
     """The `DummyEngine` class is a subclass of `DocEngine` and provides dummy
@@ -27,7 +33,9 @@ class DummyEngine(DocEngine):
     default value of "This is a dummy document."
     Attributes:
         dummy_doc (str): A string representing the dummy document.
-    Methods:
+
+    Methods
+    -------
         __init__(self, dummy_doc='This is a dummy document.'):
             Initialize the class with a dummy document.
         generate_doc(self, code: str, lang: str, statement_kind: str,
@@ -35,21 +43,31 @@ class DummyEngine(DocEngine):
             Generate documentation for a given code snippet.
     """
 
-    def __init__(self, dummy_doc='This is a dummy document.'):
+    def __init__(self, dummy_doc="This is a dummy document.") -> None:
         """Initialize the class with a dummy document.
+
         Args:
+        ----
             dummy_doc (str): A string representing the dummy document. Default
             is 'This is a dummy document.'.
+
         Attributes:
+        ----------
             dummy_doc (str): A string representing the dummy document.
+
         Returns:
-            None
+        -------
+            None.
         """
         self.dummy_doc = dummy_doc
 
-    def generate_doc(self, code: str, lang: str, statement_kind: str, context='') -> str:
+    def generate_doc(
+        self, code: str, lang: str, statement_kind: str, context="",
+    ) -> str:
         """Generate documentation for a given code snippet.
+
         Args:
+        ----
             self: The object instance.
             code (str): The code snippet for which documentation is to be
             generated.
@@ -58,7 +76,9 @@ class DummyEngine(DocEngine):
             statement_kind (str): The kind of statement in the code snippet.
             context (str): Additional context information. Default is an empty
             string.
+
         Returns:
+        -------
             str: The generated documentation for the code snippet.
         """
         return self.dummy_doc

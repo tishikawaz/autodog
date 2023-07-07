@@ -21,6 +21,7 @@ instead.
 """
 from abc import ABCMeta, abstractmethod
 
+
 class DocEngine(metaclass=ABCMeta):
     """The `DocEngine` class is an abstract base class that defines the
     interface for generating documentation for code, modules, classes, and
@@ -35,7 +36,9 @@ class DocEngine(metaclass=ABCMeta):
     If the `lang` parameter is not specified, the default language is
     assumed to be Python. If any of the abstract methods are called on an
     instance of `DocEngine`, a `NotImplementedError` will be raised.
-    Attributes:
+
+    Attributes
+    ----------
         None
     Methods:
         __init__(): The `__init__` method of the `DocEngine` class raises a
@@ -54,17 +57,20 @@ class DocEngine(metaclass=ABCMeta):
         by its subclasses.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """The `__init__` method of the `DocEngine` class raises a
         `NotImplementedError` with a message indicating that `DocEngine` is an
         abstract class. This method is typically called when an instance of the
         class is created. Since `DocEngine` is an abstract class, it cannot be
         instantiated directly and must be subclassed instead.
         """
-        raise NotImplementedError('DocEngine is an abstract class.')
+        msg = "DocEngine is an abstract class."
+        raise NotImplementedError(msg)
 
     @abstractmethod
-    def generate_doc(self, code: str, lang: str, statement_kind: str, context='') -> str:
+    def generate_doc(
+        self, code: str, lang: str, statement_kind: str, context="",
+    ) -> str:
         """The `generate_doc` method is an abstract method of the `DocEngine`
         class. It takes in two parameters: `code`, which is the code to be
         documented, and `lang`, which is an optional parameter specifying the
@@ -73,4 +79,5 @@ class DocEngine(metaclass=ABCMeta):
         will raise a `NotImplementedError` since `DocEngine` is an abstract
         class and this method must be implemented by its subclasses.
         """
-        raise NotImplementedError('DocEngine is an abstract class.')
+        msg = "DocEngine is an abstract class."
+        raise NotImplementedError(msg)
