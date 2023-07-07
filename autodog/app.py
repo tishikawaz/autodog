@@ -76,8 +76,10 @@ def app():
     parser.add_argument('--engine', help='Documentation generation engin name.', default='chatgpt', choices=['chatgpt', 'dummy'])
     parser.add_argument('--overwrite', help='Overwrite documentation.', action='store_true')
     parser.add_argument('--tries', help='Number of reconnections on server errors.', default=3, type=int)
+    parser.add_argument('-ll', '--line-length', help='Maximum line length.', default=72, type=int)
+    parser.add_argument('--model', help='ChatGPT model name.', default='gpt-3.5-turbo-0613')
     args = parser.parse_args()
-    e = engine(name=args.engine, api_key=args.key)
+    e = engine(name=args.engine, api_key=args.key, line_length=args.line_length, model=args.model)
     if args.recursively:
         for dir in glob.glob(f'{args.path}/**/', recursive=True):
             for file in glob.glob(f'{dir}/*.{args.extension}'):
