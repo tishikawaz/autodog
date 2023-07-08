@@ -462,7 +462,7 @@ def _search_end_statement(lines: list, statement: str, start_num: int) -> int:
     for line_num, line in enumerate(lines[start_num:]):
         if _match_whole(line.lower(), "end " + statement.lower()):
             return start_num + line_num
-    raise EndStatementNotFound
+    raise EndStatementNotFound(f'`end {statement}` of `{lines[start_num]}` is not found.')
 
 
 def _reconstruct_code_block(lines: list, start_num=0, end_num=-1) -> str:
@@ -515,21 +515,7 @@ def _make_blocks(lines: list, statement: str, line_num: int) -> list:
 
 
 def _match_whole(word: str, find: str) -> bool:
-    """Checks if the given word contains the specified string as a whole word.
-
-    Args:
-    ----
-        word (str): The word to search within.
-        find (str): The string to find as a whole word.
-
-    Returns:
-    -------
-        bool: True if the word contains the specified string as a whole
-        word, False otherwise.
-    """
-    regex = re.compile(f"\\b{find}\\b")
-    return len(regex.findall(word)) != 0
-
+    return len(re.findall(f'\\b{find}\\b', word)) != 0
 
 def _make_nodes(code: str) -> list:
     """Parses the given code and returns a list of nodes representing the
@@ -545,7 +531,9 @@ def _make_nodes(code: str) -> list:
     """
     lines = code.splitlines()
     for line_num, line in enumerate(lines):
-        statement = _remove_comment(line)
+        statement = _remove_str(
+            _remove_comment(line)
+        )
         if _match_whole(statement.lower(), "program"):
             (before_block, block, after_block) = _make_blocks(
                 lines, "program", line_num,
@@ -599,6 +587,8 @@ def _make_nodes(code: str) -> list:
             return nodes
     return [BodyNode(code)]
 
+def _remove_str(line: str) -> str:
+    return re.sub(r"['\"][^'\"]*['\"]" , '', line)
 
 def _is_type_statement(line: str) -> bool:
     """Checks if a given line is a type statement.
