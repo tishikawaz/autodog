@@ -22,27 +22,24 @@ from autodog.code.fortran import FortranCode
 from autodog.code.python import PyCode
 from autodog.engine.chatgpt import ChatGPTEngine
 from autodog.engine.dummy import DummyEngine
-
+from autodog.docmodel.docstring import Docstring
+from autodog.docmodel.google import GoogleStyleDocstring
+from autodog.docmodel.javadoc import Javadoc
+from autodog.docmodel.numpy import NumpyStyleDocstring
+from autodog.docmodel.restructuredtext import ReStructuredText
 
 class UnknownEngineName(Exception):
-    """The `UnknownEngineName` class is an exception that can be raised when an
-    unknown engine name is encountered in the code. This exception can be
-    used to handle cases where the engine name is not recognized or
-    supported by the program.
-    """
+    pass
 
 
 
 class UnknownFileExtension(Exception):
-    """The `UnknownFileExtension` class is an exception that can be raised when
-    encountering an unknown file extension. This exception can be used to
-    handle cases where a program is unable to process a file due to an
-    unsupported file extension. Attributes: None. Methods: None.
-    """
+    pass
 
+class UnknownDocType(Exception):
+    pass
 
-
-def engine(name="chatgpt", **kwargs):
+def engine(name:str="chatgpt", **kwargs):
     """The `engine` function is a factory function that returns an instance of
     a chatbot engine based on the `name` parameter passed to it.
 
@@ -67,10 +64,10 @@ def engine(name="chatgpt", **kwargs):
         return ChatGPTEngine(**kwargs)
     elif name == "dummy":
         return DummyEngine(**kwargs)
-    raise UnknownEngineName
+    raise UnknownEngineName(f"{name} is not supported.")
 
 
-def code(filepath: str, **kwargs):
+def code(filepath:str, **kwargs):
     """Determine the type of code file based on its extension and return an
     instance of the corresponding class.
     :param filepath: A string representing the path to the code file.
@@ -83,4 +80,17 @@ def code(filepath: str, **kwargs):
         return FortranCode(filepath)
     elif "py" in extension.lower():
         return PyCode(filepath)
-    raise UnknownFileExtension
+    raise UnknownFileExtension(f"{extension} is not supported.")
+
+def doc_model(model_name:str="docstring", **kwarg):
+    if model_name == "docstring":
+        return Docstring(**kwarg)
+    elif model_name == "google style docstring":
+        return GoogleStyleDocstring(**kwarg)
+    elif model_name == "numpy style docstring":
+        return NumpyStyleDocstring(**kwarg)
+    elif model_name == "reStructuredText":
+        return ReStructuredText(**kwarg)
+    elif model_name == "javadoc":
+        return Javadoc(**kwarg)
+    raise UnknownDocType(f"{model_name} is not supported.")
