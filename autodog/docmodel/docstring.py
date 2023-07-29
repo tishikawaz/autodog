@@ -7,7 +7,7 @@ class Docstring(DocModel):
 
     def function_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             ""
@@ -15,7 +15,7 @@ class Docstring(DocModel):
 
     def class_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             ""
@@ -23,7 +23,7 @@ class Docstring(DocModel):
 
     def module_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             ""
@@ -31,7 +31,7 @@ class Docstring(DocModel):
 
     def application_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             ""

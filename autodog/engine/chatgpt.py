@@ -165,9 +165,7 @@ class ChatGPTEngine(Engine):
             f"Suggest a documentation for the following {lang} {statement_kind}.",
             f"",
             f"Desired format:",
-            f"format```"
             f"{doc_format}",
-            f"```"
             f"",
             f"{self._insert_context(statement_kind, context)}",
             f"{self._insert_notes()}",
@@ -247,6 +245,7 @@ class ChatGPTEngine(Engine):
                 ),
             },
         ]
+
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(
             model=self.model,
@@ -255,9 +254,9 @@ class ChatGPTEngine(Engine):
             deployment_id=self.deployment_id
         )
         self.last_request_time = time.time()
+
         message = response["choices"][0]["message"]["content"]
-        return message
-        #return _get_doc(message, lang, self.line_length)
+        return _get_doc(message, lang, self.line_length)
 
 
 def _get_doc(response: str, lang: str, line_length: int) -> str:

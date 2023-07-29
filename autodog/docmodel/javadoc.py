@@ -7,7 +7,7 @@ class Javadoc(DocModel):
 
     def function_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             "",
@@ -24,7 +24,7 @@ class Javadoc(DocModel):
 
     def class_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             "",
@@ -35,14 +35,14 @@ class Javadoc(DocModel):
 
     def module_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description"
         )
 
     def application_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description"
         )

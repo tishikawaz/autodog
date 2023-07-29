@@ -7,7 +7,7 @@ class ReStructuredText(DocModel):
 
     def function_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             "",
@@ -25,7 +25,7 @@ class ReStructuredText(DocModel):
 
     def class_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             "",
@@ -33,7 +33,7 @@ class ReStructuredText(DocModel):
 
     def module_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             "",
@@ -41,7 +41,7 @@ class ReStructuredText(DocModel):
 
     def application_format(self) -> str:
         return multiline(
-            "one-line abstract",
+            "one-line description",
             "",
             "description",
             "",
