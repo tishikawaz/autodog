@@ -80,7 +80,7 @@ def code(filepath:str, **kwargs):
         return PyCode(filepath)
     raise UnknownFileExtension(f"{extension} is not supported.")
 
-def doc_model(model_name:str="docstring", **kwarg):
+def doc_model(model_name:str="google style docstring", **kwarg):
     if model_name == "docstring":
         return Docstring(**kwarg)
     elif model_name == "google style docstring":

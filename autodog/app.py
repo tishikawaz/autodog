@@ -122,7 +122,16 @@ def app():
         "--model", help="ChatGPT model name.", default="gpt-3.5-turbo-0613",
     )
     parser.add_argument(
-        "--doc-type", help="Documentation type.", default="docstring",
+        "--doc-type",
+        help="Documentation type.",
+        default="google style docstring",
+        choices=[
+            "docstring",
+            "google style docstring",
+            "numpy style docstring",
+            "reStructuredText",
+            "javadoc"
+        ]
     )
     args = parser.parse_args()
 
