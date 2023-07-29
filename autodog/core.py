@@ -31,8 +31,6 @@ from autodog.docmodel.restructuredtext import ReStructuredText
 class UnknownEngineName(Exception):
     pass
 
-
-
 class UnknownFileExtension(Exception):
     pass
 

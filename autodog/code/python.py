@@ -133,7 +133,7 @@ class PyCode:
             return None
 
     def insert_docs(
-        self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
+        self, engine:any, doc_model:DocModel, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
     ) -> None:
         """Inserts documentation strings for all nodes in the abstract syntax tree
         of the current object into the specified database engine.
@@ -159,7 +159,7 @@ class PyCode:
             the `overwrite` flag.
         """
         for node in progress_bar(ast.walk(self.tree), **kwargs):
-            self._insert_docs(node, engine, overwrite)
+            self._insert_docs(node, engine, doc_model, overwrite)
 
     @singledispatchmethod
     def _insert_docs(self, node:any, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
@@ -178,7 +178,7 @@ class PyCode:
         -------
             None.
         """
-        raise NotImplementedError(f"FortranCode._insert_docs() for {type(node)} is not implemented.")
+        pass
 
     @_insert_docs.register
     def _(self, node:ast.Module, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:

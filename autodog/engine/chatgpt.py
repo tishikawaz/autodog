@@ -87,7 +87,6 @@ class ChatGPTEngine(Engine):
 
     def __init__(
         self,
-        *,
         model:str="gpt-3.5-turbo",
         line_length:int = 72,
         notes:list[str] = [],

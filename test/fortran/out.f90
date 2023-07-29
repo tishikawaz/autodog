@@ -1,38 +1,20 @@
 module fortran_programmer_module
-    ! *******************************************************************************
-    ! Module Name: fortran_programmer_module
+    ! module fortran_programmer_module
     !
-    ! Description: This module defines a Fortran programmer class that extends the
-    ! programmer class. It provides methods to initialize the programmer
-    ! object and print the programmer's language.
+    ! A module for creating and manipulating Fortran programmer objects.
     !
-    ! Public Types:
-    ! - fortran_programmer_class: A derived type that extends the programmer class.
-    !
-    ! Public Procedures:
-    ! - initialize: Initializes the programmer object with a specified language.
-    ! - who_is: Prints the programmer's language.
-    !
-    ! Private Types:
-    ! - None
-    !
-    ! Private Procedures:
-    ! - None
-    !
-    ! *******************************************************************************
+    ! Todo: None.
     implicit none
 
     private
 
     type, public, extends(programmer) :: fortran_programmer_class
-        ! Fortran Programmer Class
-        ! This class represents a Fortran programmer. It extends the `programmer` class.
+        ! One-line abstract: A class representing a Fortran programmer.
+        !
+        ! Description: This class represents a Fortran programmer and extends the "programmer" class. It has a private attribute "language" which is an allocatable character array. The class provides two public procedures: "initialize" and "who_is".
+        !
         ! Attributes:
-        ! - language (character(:), allocatable): The programming language used by the
-        ! programmer.
-        ! Methods:
-        ! - initialize(self): Initializes the Fortran programmer object.
-        ! - who_is(self): Prints information about the Fortran programmer.
+        ! - language (character(:), allocatable): The programming language used by the Fortran programmer.
         private
 
         character(:),allocatable :: language
@@ -46,13 +28,38 @@ module fortran_programmer_module
     contains
 
     subroutine initialize(self, language)
-        ! This subroutine initializes the `self` object of type
-        ! `fortran_programmer_class`.
-        ! It takes an optional `language` argument to set the programming language of the
-        ! programmer.
-        ! If `language` is provided, it assigns it to `self%language`.
-        ! If `language` is not provided, it assigns the default value 'Fortran' to
-        ! `self%language`.
+        ! Write a one-line abstract of the function here.
+        !
+        ! This subroutine initializes a Fortran programmer object with an optional language argument.
+        !
+        ! A description of the function is written here.
+        !
+        ! This subroutine initializes a Fortran programmer object. It takes an optional language argument, which specifies the programming language the programmer is proficient in. If the language argument is provided, the subroutine allocates memory for the language attribute of the programmer object and assigns the value of the language argument to it. If the language argument is not provided, the subroutine allocates memory for the language attribute and assigns the value 'Fortran' to it.
+        !
+        ! Args:
+        !     self (fortran_programmer_class): The Fortran programmer object to be initialized.
+        !     language (character(:), allocatable, optional): The programming language the programmer is proficient in. Default is 'Fortran'.
+        !
+        ! Returns:
+        !     None
+        !
+        ! Raises:
+        !     None
+        !
+        ! Yields:
+        !     None
+        !
+        ! Examples:
+        !     # Example 1: Initialize a Fortran programmer object with a language argument
+        !     programmer = fortran_programmer_class()
+        !     programmer%initialize(language='C')
+        !
+        !     # Example 2: Initialize a Fortran programmer object without a language argument
+        !     programmer = fortran_programmer_class()
+        !     programmer%initialize()
+        !
+        ! Note:
+        !     None
         class(fortran_programmer_class), intent(inout) :: self
         character(:), allocatable, intent(in), optional :: language
 
@@ -64,19 +71,39 @@ module fortran_programmer_module
     end subroutine initialize
 
     subroutine who_is(self)
-        ! This subroutine prints the programming language of the given programmer object.
+        ! Write a one-line abstract of the function here.
         !
-        ! Parameters:
-        ! self: The programmer object whose language will be printed.
+        ! This subroutine prints the language of a Fortran programmer.
         !
-        ! Output:
-        ! None.
+        ! A description of the function is written here.
         !
-        ! Example usage:
-        ! call who_is(programmer_object)
+        ! Args:
+        !     self (fortran_programmer_class): an instance of the fortran_programmer_class
+        !
+        ! Returns:
+        !     None
+        !
+        ! Raises:
+        !     None
+        !
+        ! Yields:
+        !     None
+        !
+        ! Examples:
+        !     The usage of the function is described here.
+        !
+        !     ```fortran
+        !     type(fortran_programmer_class) :: programmer
+        !     programmer%language = 'Fortran'
+        !     call who_is(programmer)
+        !     ```
+        !     Output:
+        !     ```
+        !     I am Fortran programmer
+        !     ```
         !
         ! Note:
-        ! The programmer object must be of type fortran_programmer_class.
+        !     None
         class(fortran_programmer_class), intent(inout) :: self
 
         print *, 'I am '//self%language//' programmer'
@@ -84,17 +111,10 @@ module fortran_programmer_module
 end module fortran_programmer_module
 
 program we_love_fortran
-    ! """
-    ! This program demonstrates the usage of the `fortran_programmer_module` module
-    ! and the `fortran_programmer_class` type.
-    ! The program creates an instance of the `fortran_programmer_class` type named
-    ! `programmer` and calls two methods on it: `initialize()` and `who_is()`.
-    ! Usage:
-    !     - Make sure the `fortran_programmer_module` module is available.
-    !     - Compile and run the program.
-    ! Author: [Your Name]
-    ! Date: [Current Date]
-    ! """
+    ! Abstract: This Fortran code demonstrates the usage of a programmer module to initialize and identify a programmer.
+    !
+    ! Description:
+    ! This code utilizes a programmer module to create an instance of a programmer class. The programmer class has two methods: initialize and who_is. The initialize method is called to initialize the programmer object, and the who_is method is called to identify the programmer. The code demonstrates the usage of these methods by calling them in the main program.
     use fortran_programmer_module
     implicit none
 

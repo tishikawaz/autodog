@@ -115,7 +115,7 @@ class FortranCode:
             return None
 
     def insert_docs(
-        self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
+        self, engine:any, doc_model:DocModel, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
     ) -> None:
         """Inserts documents into a database engine.
 
@@ -137,7 +137,7 @@ class FortranCode:
         Otherwise, the documents will be skipped.
         """
         for node in progress_bar(self.tree.walk(), **kwargs):
-            self._insert_docs(node, engine, overwrite)
+            self._insert_docs(node, engine, doc_model, overwrite)
 
     @singledispatchmethod
     def _insert_docs(self, node:any, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
@@ -156,7 +156,7 @@ class FortranCode:
         -------
             None.
         """
-        raise NotImplementedError(f"FortranCode._insert_docs() for {type(node)} is not implemented.")
+        pass
 
     @_insert_docs.register
     def _(self, node:ModuleNode, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
