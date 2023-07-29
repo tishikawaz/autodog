@@ -20,6 +20,7 @@ class, it cannot be instantiated directly and must be subclassed
 instead.
 """
 from abc import ABCMeta, abstractmethod
+from typing import Optional
 
 
 class Engine(metaclass=ABCMeta):
@@ -64,12 +65,11 @@ class Engine(metaclass=ABCMeta):
         class is created. Since `DocEngine` is an abstract class, it cannot be
         instantiated directly and must be subclassed instead.
         """
-        msg = "DocEngine is an abstract class."
-        raise NotImplementedError(msg)
+        raise NotImplementedError("DocEngine is an abstract class.")
 
     @abstractmethod
     def generate_doc(
-        self, code: str, lang: str, statement_kind: str, context="",
+        self, code:str, lang:str, statement_kind:str, doc_format:str, context:Optional[str]=None
     ) -> str:
         """The `generate_doc` method is an abstract method of the `DocEngine`
         class. It takes in two parameters: `code`, which is the code to be
@@ -79,5 +79,4 @@ class Engine(metaclass=ABCMeta):
         will raise a `NotImplementedError` since `DocEngine` is an abstract
         class and this method must be implemented by its subclasses.
         """
-        msg = "DocEngine is an abstract class."
-        raise NotImplementedError(msg)
+        raise NotImplementedError("DocEngine is an abstract class.")

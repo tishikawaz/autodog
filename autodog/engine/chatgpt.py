@@ -54,11 +54,12 @@ import os
 import re
 import textwrap
 import time
+from typing import Optional
 
 import openai
 
 from autodog.engine.base import Engine
-
+from autodog.utils.string import multiline
 
 class ChatGPTEngine(Engine):
     """Initializes an instance of the class with the following parameters:
@@ -86,11 +87,19 @@ class ChatGPTEngine(Engine):
 
     def __init__(
         self,
-        notes=[],
-        doc_type="docstring",
-        api_key="",
-        model="gpt-3.5-turbo-0613",
-        line_length=72,
+        *,
+        model:str="gpt-3.5-turbo",
+        line_length:int = 72,
+        notes:list[str] = [],
+        deployment_id:Optional[str] = None,
+        api_key:str = openai.api_key,
+        api_key_path:Optional[str] = openai.api_key_path,
+        api_base:str = openai.api_base,
+        api_version:str = openai.api_version,
+        api_type:str = openai.api_type,
+        http_proxy:Optional[str] = None,
+        https_proxy:Optional[str] = None,
+        rate_limit:float = 20.0
     ) -> None:
         """Initializes an instance of the class with the following parameters:
         Args:
@@ -112,15 +121,29 @@ class ChatGPTEngine(Engine):
         -------
             None.
         """
-        self.notes = notes
-        self.doc_type = doc_type
-        openai.api_key = api_key
         self.model = model
+        self.deployment_id:Optional[str] = deployment_id
+
+        self.notes = notes
         self.line_length = line_length
-        self.last_request_time = 0
+        self.rate_limit = rate_limit
+
+        openai.api_key = api_key
+        openai.api_key_path = api_key_path
+        openai.api_base = api_base
+        openai.api_version = api_version
+        openai.api_type = api_type
+        if http_proxy is not None:
+            if isinstance(openai.proxy, dict):
+                openai.proxy["http"] = http_proxy
+        if https_proxy is not None:
+            if isinstance(openai.proxy, dict):
+                openai.proxy["https"] = https_proxy
+
+        self.last_request_time:Optional[float] = None
 
     def _make_prompt(
-        self, code: str, lang: str, statement_kind: str, context="",
+        self, code:str, lang:str, statement_kind:str, doc_format:str, context:Optional[str]=None
     ) -> str:
         """The `_make_prompt` function takes in a string `code` and an optional
         string `lang` as arguments and returns a formatted string that asks the
@@ -139,29 +162,39 @@ class ChatGPTEngine(Engine):
         given code, including any notes that may have been added to the object
         calling the function.
         """
-        p = (
-            f"Please write a {self.doc_type} for the following {lang} {statement_kind}."
-            + os.linesep
+        return multiline(
+            f"Suggest a documentation for the following {lang} {statement_kind}.",
+            f"",
+            f"Desired format:",
+            f"{doc_format}",
+            f"",
+            f"{self._insert_context(statement_kind, context)}",
+            f"{self._insert_notes()}",
+            f"{statement_kind}```",
+            f"{code}",
+            f"```"
         )
-        p += "" + os.linesep
-        p += f"```{lang.lower()}" + os.linesep
-        p += f"{code}" + os.linesep
-        p += "```" + os.linesep
-        if context:
-            p += (
-                f"This {statement_kind} is defined in the following context."
-                + os.linesep
-            )
-            p += "" + os.linesep
-            p += f"```{lang.lower()}" + os.linesep
-            p += f"{context}" + os.linesep
-            p += "```" + os.linesep
-        if self.notes:
-            p += "Notes:" + os.linesep
-            for note in self.notes:
-                p + f"- {note}\n" + os.linesep
-        p += f"Output the {self.doc_type} only."
-        return p
+
+    def _insert_context(self, statement_kind:str, context:Optional[str]=None):
+        if context is None:
+            return ""
+        return multiline(
+            f"This {statement_kind} is defined in the following context.",
+            f"context```",
+            f"{context}",
+            f"```",
+            f""
+        )
+
+    def _insert_notes(self):
+        if not self.notes:
+            return ""
+        return multiline(
+            "Notes:",
+            "".join([
+                f" - {note}" + os.linesep for note in self.notes
+            ])
+        )
 
     def _sleep_rate_limit(self) -> None:
         """Limits the rate of requests made to an API.
@@ -177,13 +210,13 @@ class ChatGPTEngine(Engine):
         This function is intended to be used as a helper function within a
         larger API client class.
         """
-        if self.last_request_time == 0:
+        if self.last_request_time is None:
             return
         t_diff = time.time() - self.last_request_time
-        time.sleep(max([0, 20 - t_diff]))
+        time.sleep(max([0, self.rate_limit - t_diff]))
 
     def generate_doc(
-        self, code: str, lang: str, statement_kind: str, context="",
+        self, code:str, lang:str, statement_kind:str, doc_format:str, context:Optional[str]=None
     ) -> str:
         """The `generate_doc` function takes in a string `code`, a string `lang`, a
         string `statement_kind`, and an optional string `context` as input
@@ -198,19 +231,32 @@ class ChatGPTEngine(Engine):
         Finally, it formats and returns the response received from the chatbot.
         """
         prompt = [
-            {"role": "system", "content": "You are an experienced programmer."},
+            {
+                "role": "system",
+                "content": "You are an experienced programmer."
+            },
             {
                 "role": "user",
-                "content": self._make_prompt(code, lang, statement_kind, context),
+                "content": self._make_prompt(
+                    code,
+                    lang,
+                    statement_kind,
+                    doc_format,
+                    context
+                ),
             },
         ]
         self._sleep_rate_limit()
         response = openai.ChatCompletion.create(
-            model=self.model, messages=prompt, temperature=0.0,
+            model=self.model,
+            messages=prompt,
+            temperature=0.0,
+            deployment_id=self.deployment_id
         )
         self.last_request_time = time.time()
         message = response["choices"][0]["message"]["content"]
-        return _get_doc(message, lang, self.line_length)
+        return message
+        #return _get_doc(message, lang, self.line_length)
 
 
 def _get_doc(response: str, lang: str, line_length: int) -> str:

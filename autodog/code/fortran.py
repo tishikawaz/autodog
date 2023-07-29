@@ -15,6 +15,7 @@ node. It uses the `singledispatchmethod` decorator to register methods
 for each type of node.
 """
 from functools import singledispatchmethod
+from typing import Optional
 
 from autodog.ast.fortran import (
     FortranAST,
@@ -24,7 +25,8 @@ from autodog.ast.fortran import (
     SubroutineNode,
     TypeNode,
 )
-from autodog.engine.docengine import DocEngine
+from autodog.engine.base import Engine
+from autodog.docmodel.base import DocModel
 from autodog.utils.progress import progress_bar_nothing
 
 
@@ -59,7 +61,7 @@ class FortranCode:
             documentation engine.
     """
 
-    def __init__(self, filepath: str) -> None:
+    def __init__(self, filepath:str) -> None:
         """The `__init__` method initializes an instance of a class with a
         `filepath` parameter, which is a string representing the path to a
         Fortran file. The method reads the contents of the file using the `open`
@@ -80,7 +82,7 @@ class FortranCode:
         """
         return self.tree.to_str()
 
-    def write(self, filepath="") -> None:
+    def write(self, filepath:Optional[str]=None) -> None:
         """Writes the contents of the current object to a file.
 
         Args:
@@ -106,20 +108,11 @@ class FortranCode:
             obj = MyClass()
             obj.write('output.txt').
         """
-        if filepath == "":
-            return self._write_to_original()
+        if filepath is None:
+            filepath = self.filepath
         with open(filepath, "w") as f:
             f.write(self.to_str())
             return None
-
-    def _write_to_original(self) -> None:
-        """Writes the string representation of the object to the file specified by
-        `self.filepath`. This method takes no arguments and returns nothing
-        (`None`). The file is opened in write mode (`'w'`) and any existing
-        content is overwritten. If the file does not exist, it is created.
-        """
-        with open(self.filepath, "w") as f:
-            f.write(self.to_str())
 
     def insert_docs(
         self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
@@ -147,7 +140,7 @@ class FortranCode:
             self._insert_docs(node, engine, overwrite)
 
     @singledispatchmethod
-    def _insert_docs(self, node: any, engine: DocEngine, overwrite: bool) -> None:
+    def _insert_docs(self, node:any, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """Inserts documentation for a given node using the specified documentation
         engine.
 
@@ -163,9 +156,10 @@ class FortranCode:
         -------
             None.
         """
+        raise NotImplementedError(f"FortranCode._insert_docs() for {type(node)} is not implemented.")
 
     @_insert_docs.register
-    def _(self, node: ModuleNode, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:ModuleNode, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """This function is a decorator that registers a function to insert
         documentation into a ModuleNode object.
 
@@ -192,12 +186,15 @@ class FortranCode:
         if not node.doc or overwrite:
             node.write_doc(
                 engine.generate_doc(
-                    node.to_str(), lang="Fortran", statement_kind="module",
+                    node.to_str(),
+                    lang="Fortran",
+                    statement_kind="module",
+                    doc_format=doc_model.module_format()
                 ),
             )
 
     @_insert_docs.register
-    def _(self, node: FunctionNode, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:FunctionNode, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """This function is a decorator that registers a function to insert
         documentation for a given FunctionNode object.
 
@@ -218,12 +215,15 @@ class FortranCode:
         if not node.doc or overwrite:
             node.write_doc(
                 engine.generate_doc(
-                    node.to_str(), lang="Fortran", statement_kind="function",
+                    node.to_str(),
+                    lang="Fortran",
+                    statement_kind="function",
+                    doc_format=doc_model.function_format()
                 ),
             )
 
     @_insert_docs.register
-    def _(self, node: SubroutineNode, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:SubroutineNode, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """This function is a decorator that registers a function to insert
         documentation for a SubroutineNode object.
 
@@ -246,12 +246,15 @@ class FortranCode:
         if not node.doc or overwrite:
             node.write_doc(
                 engine.generate_doc(
-                    node.to_str(), lang="Fortran", statement_kind="subroutine",
+                    node.to_str(),
+                    lang="Fortran",
+                    statement_kind="subroutine",
+                    doc_format=doc_model.function_format()
                 ),
             )
 
     @_insert_docs.register
-    def _(self, node: TypeNode, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:TypeNode, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """This function is a decorator that registers a function to insert
         documentation for a TypeNode object.
 
@@ -278,12 +281,15 @@ class FortranCode:
         if not node.doc or overwrite:
             node.write_doc(
                 engine.generate_doc(
-                    node.to_str(), lang="Fortran", statement_kind="type",
+                    node.to_str(),
+                    lang="Fortran",
+                    statement_kind="type",
+                    doc_format=doc_model.class_format()
                 ),
             )
 
     @_insert_docs.register
-    def _(self, node: ProgramNode, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:ProgramNode, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """The following is a suggested docstring for the given Python code:
         ```python
         Registers a function to insert documentation for a ProgramNode object
@@ -308,6 +314,9 @@ class FortranCode:
         if not node.doc or overwrite:
             node.write_doc(
                 engine.generate_doc(
-                    node.to_str(), lang="Fortran", statement_kind="code",
+                    node.to_str(),
+                    lang="Fortran",
+                    statement_kind="code",
+                    doc_format=doc_model.application_format()
                 ),
             )

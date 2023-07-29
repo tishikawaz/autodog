@@ -19,8 +19,10 @@ of the node's body.
 import ast
 import os
 from functools import singledispatchmethod
+from typing import Optional
 
-from autodog.engine.docengine import DocEngine
+from autodog.engine.base import Engine
+from autodog.docmodel.base import DocModel
 from autodog.utils.progress import progress_bar_nothing
 
 
@@ -124,20 +126,11 @@ class PyCode:
             - If `filepath` is not empty, the method writes to the file
             specified by `filepath`.
         """
-        if filepath == "":
-            return self._write_to_original()
+        if filepath is None:
+            filepath = self.filepath
         with open(filepath, "w") as f:
             f.write(self.to_str())
             return None
-
-    def _write_to_original(self) -> None:
-        """Writes the string representation of the object to the file specified by
-        `self.filepath`. This method takes no arguments and returns nothing
-        (`None`). The file is opened in write mode (`'w'`) and any existing
-        content is overwritten. If the file does not exist, it is created.
-        """
-        with open(self.filepath, "w") as f:
-            f.write(self.to_str())
 
     def insert_docs(
         self, engine: any, overwrite=False, progress_bar=progress_bar_nothing, **kwargs,
@@ -169,7 +162,7 @@ class PyCode:
             self._insert_docs(node, engine, overwrite)
 
     @singledispatchmethod
-    def _insert_docs(self, node: any, engine: DocEngine, overwrite: bool) -> None:
+    def _insert_docs(self, node:any, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """The `_insert_docs` function is a decorated method that inserts
         documentation for a given node using the specified documentation engine.
 
@@ -185,9 +178,10 @@ class PyCode:
         -------
             None.
         """
+        raise NotImplementedError(f"FortranCode._insert_docs() for {type(node)} is not implemented.")
 
     @_insert_docs.register
-    def _(self, node: ast.Module, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:ast.Module, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """Registers a function `_` to insert documentation into a given
         `ast.Module` node using a specified `DocEngine`.
         If the `node` already has a docstring or `overwrite` is set to `True`,
@@ -209,12 +203,15 @@ class PyCode:
         """
         if ast.get_docstring(node) is None or overwrite:
             doc = engine.generate_doc(
-                ast.unparse(node), lang="Python", statement_kind="module",
+                ast.unparse(node),
+                lang="Python",
+                statement_kind="module",
+                doc_format=doc_model.module_format()
             )
             insert_docstring(node, doc)
 
     @_insert_docs.register
-    def _(self, node: ast.FunctionDef, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:ast.FunctionDef, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """This function is a decorator that registers a function to insert
         docstrings into Python code.
 
@@ -239,12 +236,15 @@ class PyCode:
         """
         if ast.get_docstring(node) is None or overwrite:
             doc = engine.generate_doc(
-                ast.unparse(node), lang="Python", statement_kind="function",
+                ast.unparse(node),
+                lang="Python",
+                statement_kind="function",
+                doc_format=doc_model.function_format()
             )
             insert_docstring(node, doc)
 
     @_insert_docs.register
-    def _(self, node: ast.AsyncFunctionDef, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:ast.AsyncFunctionDef, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """Registers a function `_insert_docs` that takes in a node of type
         `ast.AsyncFunctionDef`, a `DocEngine` object, and a boolean `overwrite`.
         If the node already has a docstring or `overwrite` is True, the function
@@ -254,12 +254,15 @@ class PyCode:
         """
         if ast.get_docstring(node) is None or overwrite:
             doc = engine.generate_doc(
-                ast.unparse(node), lang="Python", statement_kind="async function",
+                ast.unparse(node),
+                lang="Python",
+                statement_kind="async function",
+                doc_format=doc_model.function_format()
             )
             insert_docstring(node, doc)
 
     @_insert_docs.register
-    def _(self, node: ast.ClassDef, engine: DocEngine, overwrite: bool) -> None:
+    def _(self, node:ast.ClassDef, engine:Engine, doc_model:DocModel, overwrite:bool) -> None:
         """This function is a decorator that registers a function to insert a
         docstring for a Python class definition.
 
@@ -284,12 +287,15 @@ class PyCode:
         """
         if ast.get_docstring(node) is None or overwrite:
             doc = engine.generate_doc(
-                ast.unparse(node), lang="Python", statement_kind="class",
+                ast.unparse(node),
+                lang="Python",
+                statement_kind="class",
+                doc_format=doc_model.class_format()
             )
             insert_docstring(node, doc)
 
 
-def offset_lines(doc: str, level: int) -> str:
+def offset_lines(doc:str, level:int) -> str:
     """This function takes in a string `doc` and an integer `level` as input
     and returns a modified string with each line of the input string
     indented by `level` spaces, except for the first and last lines. The
@@ -310,7 +316,7 @@ def offset_lines(doc: str, level: int) -> str:
     )
 
 
-def insert_docstring(node: any, doc: str) -> None:
+def insert_docstring(node:any, doc:str) -> None:
     """This function adds a docstring to the given AST node. The node can be of
     type ast.AsyncFunctionDef, ast.FunctionDef, ast.ClassDef, or ast.Module.
     If the node is not of any of these types, the function returns without

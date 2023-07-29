@@ -28,14 +28,14 @@ from time import sleep
 
 import openai
 
-from autodog.core import code, engine
+from autodog.core import code, engine, doc_model
 from autodog.utils.progress import progress_bar
 
 
-def _insert_doc(code, engine, overwrite, n_tries, interval=20):
+def _insert_doc(code, engine, doc_model, overwrite, n_tries, interval=20):
     for n in range(n_tries):
         try:
-            code.insert_docs(engine, overwrite=overwrite, progress_bar=progress_bar)
+            code.insert_docs(engine, doc_model, overwrite=overwrite, progress_bar=progress_bar)
             return
         except openai.error.ServiceUnavailableError as e:
             print()
@@ -125,23 +125,27 @@ def app():
         "--doc-type", help="Documentation type.", default="docstring",
     )
     args = parser.parse_args()
+
     e = engine(
         name=args.engine,
         api_key=args.key,
         line_length=args.line_length,
-        model=args.model,
-        doc_type=args.doc_type
+        model=args.model
     )
+    m = doc_model(
+        model_name=args.doc_type
+    )
+
     if args.recursively:
         for dir in glob.glob(f"{args.path}/**/", recursive=True):
             for file in glob.glob(f"{dir}/*.{args.extension}"):
                 c = code(file)
                 print("Insert documentation to", file)
-                _insert_doc(c, e, args.overwrite, args.tries)
+                _insert_doc(c, e, m, args.overwrite, args.tries)
                 c.write()
     else:
         c = code(args.path)
-        _insert_doc(c, e, args.overwrite, args.tries)
+        _insert_doc(c, e, m, args.overwrite, args.tries)
         c.write()
 
 
