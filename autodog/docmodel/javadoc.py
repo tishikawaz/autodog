@@ -39,3 +39,11 @@ class Javadoc(DocModel):
             "",
             "A description of the module is written here.",
         )
+
+    def application_format(self) -> str:
+        return multiline(
+            f"Write a one-line abstract of the application here.",
+            f"",
+            f"A description of the application, such as description of ",
+            f"usage, I/O, and interfaces, is written here."
+        )

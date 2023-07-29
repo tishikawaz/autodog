@@ -62,3 +62,10 @@ class GoogleStyleDocstring(DocModel):
             "    (If the module doesn't have todo, this item should not be written.)",
             "    ..."
         )
+    def application_format(self) -> str:
+        return multiline(
+            f"Write a one-line abstract of the application here.",
+            f"",
+            f"A description of the application, such as description of ",
+            f"usage, I/O, and interfaces, is written here."
+        )

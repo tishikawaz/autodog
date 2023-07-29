@@ -15,3 +15,7 @@ class DocModel(metaclass=ABCMeta):
     @abstractmethod
     def module_format(self) -> str:
         raise NotImplementedError("DocModel is an abstract class.")
+
+    @abstractmethod
+    def application_format(self) -> str:
+        raise NotImplementedError("DocModel is an abstract class.")
