@@ -327,7 +327,7 @@ def insert_docstring(node:any, doc:str) -> None:
     docstring to match the indentation of the node's body.
     """
     if not isinstance(
-        node, ast.AsyncFunctionDef | ast.FunctionDef | ast.ClassDef | ast.Module,
+        node, (ast.AsyncFunctionDef, ast.FunctionDef, ast.ClassDef, ast.Module)
     ):
         return
     if not (node.body and isinstance(node.body[0], ast.Expr)):
