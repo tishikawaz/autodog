@@ -7,9 +7,9 @@ class Javadoc(DocModel):
 
     def function_format(self) -> str:
         return multiline(
-            "Write a one-line abstract of the function here.",
+            "one-line abstract",
             "",
-            "A description of the function is written here.",
+            "description",
             "",
             " @param [argument name] <[argument type]> description",
             " (If the function doesn't have an argument, this item should not be written.)",
@@ -24,9 +24,9 @@ class Javadoc(DocModel):
 
     def class_format(self) -> str:
         return multiline(
-            "Write a one-line abstract of the class here.",
+            "one-line abstract",
             "",
-            "A description of the class is written here.",
+            "description",
             "",
             " @param [argument name] <[argument type]> description",
             " (If the function doesn't have an argument, this item should not be written.)",
@@ -35,15 +35,14 @@ class Javadoc(DocModel):
 
     def module_format(self) -> str:
         return multiline(
-            "Write a one-line abstract of the module here.",
+            "one-line abstract",
             "",
-            "A description of the module is written here.",
+            "description"
         )
 
     def application_format(self) -> str:
         return multiline(
-            f"Write a one-line abstract of the application here.",
-            f"",
-            f"A description of the application, such as description of ",
-            f"usage, I/O, and interfaces, is written here."
+            "one-line abstract",
+            "",
+            "description"
         )

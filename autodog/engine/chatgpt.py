@@ -165,7 +165,9 @@ class ChatGPTEngine(Engine):
             f"Suggest a documentation for the following {lang} {statement_kind}.",
             f"",
             f"Desired format:",
+            f"format```"
             f"{doc_format}",
+            f"```"
             f"",
             f"{self._insert_context(statement_kind, context)}",
             f"{self._insert_notes()}",
