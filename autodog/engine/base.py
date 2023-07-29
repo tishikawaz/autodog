@@ -22,7 +22,7 @@ instead.
 from abc import ABCMeta, abstractmethod
 
 
-class DocEngine(metaclass=ABCMeta):
+class Engine(metaclass=ABCMeta):
     """The `DocEngine` class is an abstract base class that defines the
     interface for generating documentation for code, modules, classes, and
     functions.

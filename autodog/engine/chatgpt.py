@@ -57,10 +57,10 @@ import time
 
 import openai
 
-from autodog.engine.docengine import DocEngine
+from autodog.engine.base import Engine
 
 
-class ChatGPTEngine(DocEngine):
+class ChatGPTEngine(Engine):
     """Initializes an instance of the class with the following parameters:
     Args:
         notes (list, optional): A list of notes to be used for the instance.

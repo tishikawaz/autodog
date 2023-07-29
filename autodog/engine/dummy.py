@@ -19,10 +19,10 @@ Methods
         Returns the dummy document.
 
 """
-from autodog.engine.docengine import DocEngine
+from autodog.engine.base import Engine
 
 
-class DummyEngine(DocEngine):
+class DummyEngine(Engine):
     """The `DummyEngine` class is a subclass of `DocEngine` and provides dummy
     documentation for code, modules, classes, and functions.
     The class has four methods, `generate_code_doc`, `generate_module_doc`,
