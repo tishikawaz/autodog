@@ -103,7 +103,7 @@ class PyCode:
         """
         return ast.unparse(self.tree)
 
-    def write(self, filepath="") -> None:
+    def write(self, filepath:Optional[str]=None) -> None:
         """Writes the contents of the current object to a file.
 
         Args:
